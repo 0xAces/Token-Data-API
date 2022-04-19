@@ -64,9 +64,13 @@ const getYETIData = async (web3s) => {
 
     const treasury = Number(await YETI.methods.balanceOf(avax_addresses.treasury).call())
 
+    const teamAllocation = Number(await YETI.methods.balanceOf(avax_addresses.teamAllocation).call())
+    const undistributedFarmRewards = Number(await YETI.methods.balanceOf(avax_addresses.undistributedFarmRewards).call())
+    const communityIssuance = Number(await YETI.methods.balanceOf(avax_addresses.communityIssuance).call())
+    const pool2Rewarder = Number(await YETI.methods.balanceOf(avax_addresses.pool2Rewarder).call())
     // In the following section we perform calculations on base values returned from web3 calls to get the final values we want to return in our API.
     
-    tokenData.avax.circulatingSupply.value = tokenData.avax.totalSupply.value - teamTotal - investorsTotal - treasury
+    tokenData.avax.circulatingSupply.value = tokenData.avax.totalSupply.value - teamTotal - investorsTotal - treasury - teamAllocation - undistributedFarmRewards - communityIssuance - pool2Rewarder
   
     
     tokenData.combined.totalSupply.value = tokenData.avax.totalSupply.value

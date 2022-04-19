@@ -20,6 +20,10 @@ const avax_addresses = {
       "0xf7695ee425a3655a45530ed0fd5c63e9d9559ec0",
       "0xe3a0f2ab3b0f282be8221a836f4ebbdfb9ef671e"
     ],
-    YETIAddress: "0x77777777777d4554c39223c354a05825b2e8faa3"
+    YETIAddress: "0x77777777777d4554c39223c354a05825b2e8faa3",
+    teamAllocation: "0x5b7a9db4d69ad8f5bb7c443ffc3d35301851157e",
+    undistributedFarmRewards: "0xfffFffFFfFe8aA117FE603a37188E666aF110F39",
+    communityIssuance: "0x000000000bCD46cdD5a6E92C885b34CeAc6d2FF4",
+    pool2Rewarder: "0xf572455be31bf54cc7d0c6d69b60813171bb7b12"
   }
   module.exports = { avax_addresses }
