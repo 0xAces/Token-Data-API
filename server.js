@@ -6,8 +6,8 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const db = require('./utils/db')
 
-const projectTwoRoutes = require('./routes/projectTwo')
-const projectOneRoutes = require('./routes/projectOne')
+const YETIRoutes = require('./routes/YETI')
+const YUSDRoutes = require('./routes/YUSD')
 const getChainData = require("./utils/getChainData")
 const removeTrailingSlash = require('./middleware/removeTrailingSlash');
 
@@ -44,16 +44,16 @@ app.use(morgan('tiny'))
 
 // Routes
 app.use(/^\/$/, (req, res) => {
-  res.send("Welcome to the Fomocraft API!")
+  res.send("Welcome to the YetiFinance API!")
 })
 
 
 
 // add cached data to req
-app.use('/v1/projectTwo', async (req, res, next) => {
+app.use('/v1/YUSD', async (req, res, next) => {
   const client = db.getClient()
   try {
-    await db.getCachedprojectTwoData(client).then(result => req.chainData = result)
+    await db.getCachedYUSDData(client).then(result => req.chainData = result)
   }
   catch(err){
     console.log("error getting data")
@@ -63,10 +63,10 @@ app.use('/v1/projectTwo', async (req, res, next) => {
 })
 
 // add cached data to req
-app.use('/v1/projectOne', async (req, res, next) => {
+app.use('/v1/YETI', async (req, res, next) => {
   const client = db.getClient()
   try {
-    await db.getCachedprojectOneData(client).then(result => req.chainData = result)
+    await db.getCachedYETIData(client).then(result => req.chainData = result)
   }
   catch(err){
     console.log("error getting data")
@@ -75,8 +75,8 @@ app.use('/v1/projectOne', async (req, res, next) => {
   next()
 })
 
-app.use('/v1/projectOne', projectOneRoutes)
-app.use('/v1/projectTwo', projectTwoRoutes)
+app.use('/v1/YETI', YETIRoutes)
+app.use('/v1/YUSD', YUSDRoutes)
 
 app.use((req, res) => {
   res.status(404).json({error: true, message: "Resource not found"})

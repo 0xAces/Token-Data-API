@@ -4,7 +4,7 @@ const MongoClient = require('mongodb').MongoClient
 
 const initializeClient = () => {
     try {
-        const uri = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.it21v.mongodb.net/fomo?retryWrites=true&w=majority`
+        const uri = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@yeti.pukmx.mongodb.net/YetiFinance?retryWrites=true&w=majority`
         const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true  })
         client.connect()
         const getClient = () => client
@@ -18,10 +18,10 @@ const initializeClient = () => {
 const { client, getClient } = initializeClient()
 
  
-updateprojectOneData = async (chainData, client) => {
+updateYETIData = async (chainData, client) => {
     try {
-        const database = client.db('fomo')
-        const collection = database.collection('projectOne')
+        const database = client.db('YetiFinance')
+        const collection = database.collection('YETI')
         chainData.timestamp = Date.now()
         let newChainData = Object.assign({}, chainData)
         newChainData._id = ObjectId()
@@ -36,10 +36,10 @@ updateprojectOneData = async (chainData, client) => {
 }
 
 
-updateprojectTwoData = async (chainData, client) => {
+updateYUSDData = async (chainData, client) => {
     try {
-        const database = client.db('fomo')
-        const collection = database.collection('projectTwo')
+        const database = client.db('YetiFinance')
+        const collection = database.collection('YUSD')
         chainData.timestamp = Date.now()
         let newChainData = Object.assign({}, chainData)
         newChainData._id = ObjectId()
@@ -53,10 +53,10 @@ updateprojectTwoData = async (chainData, client) => {
     }
 }
 
-getCachedprojectOneData = async (client) => {
+getCachedYETIData = async (client) => {
     try {
-        const database = client.db('fomo')
-        const collection = database.collection('projectOne')
+        const database = client.db('YetiFinance')
+        const collection = database.collection('YETI')
         cachedData = await collection.find().sort({ _id: -1 }).limit(1).toArray()
         cachedData = cachedData[0]
         return cachedData    
@@ -67,10 +67,10 @@ getCachedprojectOneData = async (client) => {
 }
 
 
-getCachedprojectTwoData = async (client) => {
+getCachedYUSDData = async (client) => {
     try {
-        const database = client.db('fomo')
-        const collection = database.collection('projectTwo')
+        const database = client.db('YetiFinance')
+        const collection = database.collection('YUSD')
         cachedData = await collection.find().sort({ _id: -1 }).limit(1).toArray()
         cachedData = cachedData[0]
         return cachedData    
@@ -83,9 +83,9 @@ getCachedprojectTwoData = async (client) => {
 
 module.exports = {
     getClient,
-    updateprojectOneData,
-    getCachedprojectOneData,
-    updateprojectTwoData,
-    getCachedprojectTwoData
+    updateYETIData,
+    getCachedYETIData,
+    updateYUSDData,
+    getCachedYUSDData
 }
 
