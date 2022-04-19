@@ -59,20 +59,20 @@ app.get('/total', (req, res) => {
 // })
 
 app.get('/avax/total', (req, res) => {
-  res.json(req.chainData.bsc.totalSupply.value)
+  res.json(req.chainData.avax.totalSupply.value)
 })
 
 app.get('/avax/circulating', (req, res) => {
-  res.json(req.chainData.bsc.circulatingSupply.value)
+  res.json(req.chainData.avax.circulatingSupply.value)
 })
 
 
 app.get('/avax/total/details', (req, res) => {
-  res.json(req.chainData.bsc.totalSupply)
+  res.json(req.chainData.avax.totalSupply)
 })
  
 app.get('/avax/circulating/details', (req, res) => {
-  res.json(req.chainData.bsc.circulatingSupply)
+  res.json(req.chainData.avax.circulatingSupply)
 })
 
 module.exports = app

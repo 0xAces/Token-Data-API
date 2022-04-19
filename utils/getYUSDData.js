@@ -1,11 +1,11 @@
-const addresses = require("../addresses/YUSD") // Get all relevant Ethereum and BSC addresses
+const addresses = require("../addresses/YUSD") // Get all relevant Ethereum and avax addresses
 const YUSDAbi = require("../abi/YUSDAbi.json") // Get the token ABI for the project. ABIs can be found on the Etherscan page for the contract if the contract has been verified. Otherwise you may need to ask your Solidity dev for it.
 const numeral = require("numeral") // NPM package for formatting numbers
 const db = require("./db") // Util for setting up DB and main DB methods
 
 // Async function which takes in web3 collection, makes web3 calls to get current on chain data, formats data, and caches formatted data to MongoDB
 const getYUSDData = async (web3s) => {
-    // Unpack web3 objects for Ethereum and BSC
+    // Unpack web3 objects for Ethereum and avax
     const {avax_web3} = web3s
     // // Get Ethereum block number 
     // const blockNumber = await web3.eth.getBlockNumber()
@@ -29,7 +29,7 @@ const getYUSDData = async (web3s) => {
         return Math.round((num / (10*10**(decimal-3))))/100
     }
 
-    // Make tokenData object. This object is used for storing formatted and calculated results from web3 calls from both Ethereum and BSC web3 objects. It is divided into 3 sections for data on BSC, Ethereum, and aggregate data from both chains in 'combined'.
+    // Make tokenData object. This object is used for storing formatted and calculated results from web3 calls from both Ethereum and avax web3 objects. It is divided into 3 sections for data on avax, Ethereum, and aggregate data from both chains in 'combined'.
 
     let tokenData = {
         combined: {

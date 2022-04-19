@@ -1,7 +1,7 @@
 // Used to set schedule for calling Infura to update token data
 const schedule = require("node-schedule")
 
-// Used for connecting with node endpoints (Ethereum and BSC for this project) to get live information about on chain data
+// Used for connecting with node endpoints (Ethereum and avax for this project) to get live information about on chain data
 const Web3 = require("web3")
 
 // Used to set a time delay between retrying Web3 connections
@@ -27,7 +27,7 @@ const setupWeb3 = async () => {
 
   let avax_web3
 
-  // Run through three provided BSC endpoints until a connection is established and a valid web3 object is returned
+  // Run through three provided avax endpoints until a connection is established and a valid web3 object is returned
 
   while (true) {
 
