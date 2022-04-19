@@ -18,7 +18,7 @@ const avax_addresses = {
       "0x78b3df2d477fff1fb5a643ef4dd8274df0bcce95",
       "0x95f51eb39407a372cd1c26ff1ada4dcdb70db5a7",
       "0xf7695ee425a3655a45530ed0fd5c63e9d9559ec0",
-      "0xe3a0f2ab3b0f282be8221a836f4ebbdfb9ef671e"
+      "0xe3a0f2ab3b0f282be8221a836f4ebbdfb9ef671e",
     ],
     YETIAddress: "0x77777777777d4554c39223c354a05825b2e8faa3",
     teamAllocation: "0x5b7a9db4d69ad8f5bb7c443ffc3d35301851157e",
