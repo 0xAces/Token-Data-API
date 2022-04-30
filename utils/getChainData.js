@@ -13,6 +13,7 @@ const getYETIData = require("./getYETIData")
 // Logic for collecting and calculating all data for YUSD
 const getYUSDData = require("./getYUSDData")
 
+const getTJFarmPoolData = require("./getTJFarmPoolData")
 // const getPriceData = require("./getPriceData") 
 
 // Function to setup web3 objects for chains to be queried.
@@ -78,6 +79,8 @@ const updateData = async (web3_collection) => {
     getYETIData(web3_collection)
 
     getYUSDData(web3_collection)
+
+    getTJFarmPoolData(web3_collection)
 
   })
 
