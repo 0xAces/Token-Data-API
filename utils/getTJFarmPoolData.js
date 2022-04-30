@@ -1,3 +1,5 @@
+const fetch = (...args) =>
+  import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const addresses = require("../addresses/FarmPool") // Get all relevant Ethereum and avax addresses
 const MCV3Abi = require("../abi/MasterChefV3Abi.json") // Get the token ABI for the project. ABIs can be found on the Etherscan page for the contract if the contract has been verified. Otherwise you may need to ask your Solidity dev for it.
 const JLPAbi = require("../abi/JLPAbi.json")
@@ -85,8 +87,23 @@ const getTJFarmPoolData = async (web3s) => {
     /**
      * Calculate Pool APR
      */
-     
-  
+    async function getVolume() {
+        let response =  await fetch("https://api.coingecko.com/api/v3/coins/yeti-finance/tickers?exchange_ids=traderjoe")
+        let data = await response.json()
+        return data['tickers'][0]["converted_volume"]['usd']
+    }
+
+    const tradingVolume = await getVolume()
+    const feeRate = 0.0025
+    const feeShare = tradingVolume * feeRate * 365
+    const totalLiquidity = Number(await YETIAVAXJLP.methods.totalSupply().call())
+
+    const totalLiquidityUSD = convert(totalLiquidity * YETIAVAXJLPPrice, 36)
+    const yearlyFees = feeShare / totalLiquidityUSD
+
+    APRData.pool.description = "TJ Farming Pool Trading Fee APR"
+    APRData.pool.value = yearlyFees
+
     Object.keys(APRData).forEach(key => {
         APRData[key].formattedValue = numeral(APRData[key].value).format()
         APRData[key].block = avax_blockNumber

@@ -29,6 +29,7 @@
     "ko-sleep": "^1.1.4",
     "mongodb": "^4.5.0",
     "morgan": "^1.10.0",
+    "node-fetch": "^3.2.4",
     "node-schedule": "^2.1.0",
     "nodemon": "^2.0.15",
     "npm-check-updates": "^12.5.9",
