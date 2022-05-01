@@ -27,7 +27,7 @@ const limiter = rateLimit({
 });
  
 //  apply to all requests
-app.use(cors())
+app.use(cors({origin: 'https://app.yeti.finance/'}))
 app.use(bodyParser.text())
 
 
