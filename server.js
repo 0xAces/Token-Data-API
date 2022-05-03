@@ -44,15 +44,16 @@ app.use(morgan('tiny'))
 
 // Remove trailing slash
 
-const setHeader = (res) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.append('Access-Control-Allow-Credentials', 'true');
-  res.append('Access-Control-Allow-Methods', 'GET');
-}
+app.all('*', (req, res, next) => {
+  res.header("Access-Control-Allow-Origin", ["https://localhost:3000", "https://app.yeti.finance/", "https://beta.yeti.finance/"]);
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET');
+  next();
+});
 
 // Routes
 app.use(/^\/$/, (req, res, next) => {
-  setHeader(res)
+  
   res.send("Welcome to the YetiFinance API!")
   next()
 })
@@ -61,7 +62,7 @@ app.use(/^\/$/, (req, res, next) => {
 
 // add cached data to req
 app.use('/v1/YUSD', async (req, res, next) => {
-  setHeader(res)
+
   const client = db.getClient()
   try {
     await db.getCachedYUSDData(client).then(result => req.chainData = result)
@@ -75,7 +76,7 @@ app.use('/v1/YUSD', async (req, res, next) => {
 
 // add cached data to req
 app.use('/v1/YETI', async (req, res, next) => {
-  setHeader(res)
+  
   const client = db.getClient()
   try {
     await db.getCachedYETIData(client).then(result => req.chainData = result)
@@ -88,7 +89,7 @@ app.use('/v1/YETI', async (req, res, next) => {
 })
 
 app.use('/v1/FarmPool', async (req, res, next) => {
-  setHeader(res)
+  
   const client = db.getClient()
   try {
     await db.getCachedFarmPoolData(client).then(result => req.chainData = result)
@@ -101,7 +102,7 @@ app.use('/v1/FarmPool', async (req, res, next) => {
 })
 
 app.use('/v1/Collaterals', async (req, res, next) => {
-  setHeader(res)
+  
   const client = db.getClient()
   try {
     await db.getCachedCollateralsData(client).then(result => req.chainData = result)
