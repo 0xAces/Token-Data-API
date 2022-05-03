@@ -23,8 +23,8 @@ const app = express()
 
 // Limit request rate
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  windowMs: 60 * 1000, // 15 minutes
+  max: 1000 // limit each IP to 100 requests per windowMs
 });
  
 //  apply to all requests
@@ -52,7 +52,7 @@ app.use(/^\/$/, (req, res) => {
 
 
 // add cached data to req
-app.use('/YUSD', async (req, res, next) => {
+app.use('/v1/YUSD', async (req, res, next) => {
   const client = db.getClient()
   try {
     await db.getCachedYUSDData(client).then(result => req.chainData = result)
