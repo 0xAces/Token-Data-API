@@ -79,12 +79,12 @@ const getAVAXUSDCAPR = async (web3s) => {
     const JOEPrice = Number(await JOEPriceFeed.methods.fetchPrice_v().call())
 
     const joeAPR = joePerSec * farmPoolAllocPoint * JOEPrice * SECONDS_PER_YEAR * veJoeShareBp / (totalAllocPoint * farmPoolLPValue * 10000) 
-
+    
     /**
      * Calculate Pool APR
      */
 
-    const poolAPR = await aprUtils.calcAutoCompound("https://api.coingecko.com/api/v3/coins/wrapped-avax/tickers?exchange_ids=traderjoe", 0.0025, AVAXUSDCJLP, AVAXUSDCPrice, avax_addresses.USDC, avax_addresses.WAVAX)
+    const poolAPR = await aprUtils.calcPoolFeeAPR("https://api.coingecko.com/api/v3/coins/wrapped-avax/tickers?exchange_ids=traderjoe", 0.0025, AVAXUSDCJLP, AVAXUSDCPrice, avax_addresses.USDC, avax_addresses.WAVAX)
     // console.log(poolAPR)
     // Calculate auto Compound APR
     const acJoeAPR = aprUtils.calcAutoCompound(joeAPR, 365)

@@ -28,7 +28,7 @@ const limiter = rateLimit({
 });
  
 //  apply to all requests
-app.use(cors({origin: '*'}))
+app.use(cors({origin: '*', methods: ["GET"]}))
 app.use(bodyParser.text())
 
 
