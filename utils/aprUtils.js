@@ -1,3 +1,4 @@
+const Erc20ABI = require("../abi/ERC20Abi.json")
 const fetch = (...args) =>
   import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const convert = (num, decimal) => {
@@ -53,8 +54,28 @@ const calcAutoCompound = (apr, num) => {
     return (((apr / num) + 1) ** num) - 1
 }
 
+const calcQiSupplyAPR = (supplyRate) => {
+    return (supplyRate / 10 ** 18 * 86400 + 1) ** 365 - 1
+}
+
+// takes qiToken contract objects
+async function getUnderlyingDecimals(qiToken, avax_web3) {
+
+    if (qiToken.options.address == "0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c") {
+        return 18
+    }
+
+    const underlyingAddress = await qiToken.methods.underlying().call()
+
+    const underlyingToken = new avax_web3.eth.Contract(Erc20ABI, underlyingAddress)
+
+    return Number(await underlyingToken.methods.decimals().call())
+}
+
 module.exports = {
     calcPoolFeeAPR,
     calcPoolFeeAPRTest,
-    calcAutoCompound
+    calcAutoCompound,
+    calcQiSupplyAPR,
+    getUnderlyingDecimals
 }
