@@ -70,6 +70,23 @@ updateFarmPoolData = async (chainData, client) => {
     }
 }
 
+updateCollateralsData = async (chainData, client) => {
+    try {
+        const database = client.db('YetiFinance')
+        const collection = database.collection('Collaterals')
+        chainData.timestamp = Date.now()
+        let newChainData = Object.assign({}, chainData)
+        newChainData._id = ObjectId()
+        let deleteResult = await collection.deleteMany( { timestamp : {"$lt" : Date.now() - 60 * 1000 }}) 
+        console.log(`Deleted: ${deleteResult.deletedCount}`)
+        await collection.insertOne(newChainData)
+        console.log("Inserted new entries")
+    } 
+    catch(err) {
+        console.log(err)
+    }
+}
+
 getCachedYETIData = async (client) => {
     try {
         const database = client.db('YetiFinance')
@@ -110,6 +127,19 @@ getCachedFarmPoolData = async (client) => {
     }
 }
 
+getCachedCollateralsData = async (client) => {
+    try {
+        const database = client.db('YetiFinance')
+        const collection = database.collection('Collaterals')
+        cachedData = await collection.find().sort({ _id: -1 }).limit(1).toArray()
+        cachedData = cachedData[0]
+        return cachedData    
+    } 
+    catch(err) {
+        console.log(err)
+    }
+}
+
 
 module.exports = {
     getClient,
@@ -118,6 +148,8 @@ module.exports = {
     updateYUSDData,
     getCachedYUSDData,
     updateFarmPoolData,
-    getCachedFarmPoolData
+    getCachedFarmPoolData,
+    updateCollateralsData,
+    getCachedCollateralsData
 }
 

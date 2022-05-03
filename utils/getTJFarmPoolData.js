@@ -38,7 +38,7 @@ const getTJFarmPoolData = async (web3s) => {
     let YETIPriceFeed = new avax_web3.eth.Contract(priceFeedAbi, avax_addresses.YETIPriceFeed)
     let YETIAVAXPriceFeed = new avax_web3.eth.Contract(priceFeedAbi, avax_addresses.YETIAVAXJLPPriceFeed)
     let YETIAVAXJLP = new avax_web3.eth.Contract(JLPAbi, avax_addresses.YETIAVAXJLP)
-    let Rewarder = new avax_web3.eth.Contract(rewarderAbi, avax_addresses.Rewarder)
+    let Rewarder = new avax_web3.eth.Contract(rewarderAbi, avax_addresses.YETIRewarder)
     
     // For converting to proper number of decimals. We use this to convert from raw numbers returned from web3 calls to human readable formatted numbers based on the decimals for each token.  
     const convert = (num, decimal) => {
@@ -88,7 +88,7 @@ const getTJFarmPoolData = async (web3s) => {
      * Calculate Pool APR
      */
 
-    const poolAPR = await aprUtils.calcPoolFeeAPR("https://api.coingecko.com/api/v3/coins/yeti-finance/tickers?exchange_ids=traderjoe", 0.0025, YETIAVAXJLP, YETIAVAXJLPPrice)
+    const poolAPR = await aprUtils.calcPoolFeeAPR("https://api.coingecko.com/api/v3/coins/yeti-finance/tickers?exchange_ids=traderjoe", 0.0025, YETIAVAXJLP, YETIAVAXJLPPrice, avax_addresses.YETI, avax_addresses.WAVAX)
     
 
     APRData.pool.description = "TJ Farming Pool Trading Fee APR"

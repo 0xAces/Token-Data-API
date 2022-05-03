@@ -1,16 +1,18 @@
 
-const MCV3Abi = require("../../abi/MasterChefV3Abi.json") // Get the token ABI for the project. ABIs can be found on the Etherscan page for the contract if the contract has been verified. Otherwise you may need to ask your Solidity dev for it.
+const boostedJoeMCV3Abi = require("../../abi/BoostedJoeMCV3Abi.json") // Get the token ABI for the project. ABIs can be found on the Etherscan page for the contract if the contract has been verified. Otherwise you may need to ask your Solidity dev for it.
 const JLPAbi = require("../../abi/JLPAbi.json")
 const priceFeedAbi = require("../../abi/PriceFeedAbi.json")
+const addresses = require("../../addresses/FarmPool")
 const numeral = require("numeral") // NPM package for formatting numbers
 const db = require("../db") // Util for setting up DB and main DB methods
 const SECONDS_PER_YEAR = 31622400
 const aprUtils = require("../aprUtils")
 
-const WETH_WAVAX_LP_PRICEFEED_ADDRESS = "0x0Cf5f6f4b537256ed4D01725407E1889E386a1fa"
-const WETH_WAVAX_LP_TOKEN_ADDRESS = "0xFE15c2695F1F920da45C30AAE47d11dE51007AF9"
+const POOL_FEE = 0.1
+const JOE_FEE = 0.6
+const PID = 1
 // Async function which takes in web3 collection, makes web3 calls to get current on chain data, formats data, and caches formatted data to MongoDB
-const getTJFarmPoolData = async (web3s) => {
+const getWETHWAVAXAPR = async (web3s) => {
     // Unpack web3 objects for Ethereum and avax
     const {avax_web3} = web3s
     // // Get Ethereum block number 
@@ -34,9 +36,10 @@ const getTJFarmPoolData = async (web3s) => {
 
     // web3.eth.Contract() creates a smart contract object using the ABI and address of the contract which allows you to call all the smart contract functions listed in the ABI. Since we are not supplying a private key to our web3 object, we can only use it for reading on chain data, not for anything requiring signing - which is all we need for this project.
     // Here we instantiate the Ethereum smart contract object
-    let JOEMC = new avax_web3.eth.Contract(MCV3Abi, avax_addresses.TJMasterChefV3)
-    let WETHWAVAXPriceFeed = new avax_web3.eth.Contract(priceFeedAbi, WETH_WAVAX_LP_PRICEFEED_ADDRESS)
-    let WETHWAVAXJLP = new avax_web3.eth.Contract(JLPAbi, WETH_WAVAX_LP_TOKEN_ADDRESS)
+    let JOEMC = new avax_web3.eth.Contract(boostedJoeMCV3Abi, avax_addresses.BoostedTJMCV3)
+    let JOEPriceFeed = new avax_web3.eth.Contract(priceFeedAbi, avax_addresses.JOEPriceFeed)
+    let WETHWAVAXPriceFeed = new avax_web3.eth.Contract(priceFeedAbi, avax_addresses.WETHWAVAXJLPPriceFeed)
+    let WETHWAVAXJLP = new avax_web3.eth.Contract(JLPAbi, avax_addresses.WETHWAVAXJLP)
     
     // For converting to proper number of decimals. We use this to convert from raw numbers returned from web3 calls to human readable formatted numbers based on the decimals for each token.  
     const convert = (num, decimal) => {
@@ -50,30 +53,54 @@ const getTJFarmPoolData = async (web3s) => {
     }
 
     /**
-     * Calculate Pool APR
+     * Calculate JOE APR
      */
-
-    graphQlUrl = "https://api.thegraph.com/subgraphs/name/traderjoe-xyz/exchange"
-    const poolAPR = await aprUtils.calcPoolFeeAPR("https://api.coingecko.com/api/v3/coins/yeti-finance/tickers?exchange_ids=traderjoe", 0.0025, YETIAVAXJLP, YETIAVAXJLPPrice)
+    const LPStaked = Number(await WETHWAVAXJLP.methods.balanceOf(avax_addresses.BoostedTJMCV3).call())
     
-    APRData.pool.description = "WETH-WAVAX Pool Fee APR"
-    APRData.pool.value = poolAPR
+    const WETHWAVAXPrice =  Number(await WETHWAVAXPriceFeed.methods.fetchPrice_v().call())
+
+    const farmPoolLPValue = LPStaked * WETHWAVAXPrice
+
+    const joePerSec = Number(await JOEMC.methods.joePerSec().call())
+
+    const poolInfo = await JOEMC.methods.poolInfo(PID).call()
+
+    const farmPoolAllocPoint = Number(poolInfo[1])
+
+
+    const totalAllocPoint =  Number(await JOEMC.methods.totalAllocPoint().call())
+
+    const veJoeShareBp = Number(poolInfo[6])
+
+    
+    const JOEPrice = Number(await JOEPriceFeed.methods.fetchPrice_v().call())
+
+    const joeAPR = joePerSec * farmPoolAllocPoint * JOEPrice * SECONDS_PER_YEAR * veJoeShareBp / (totalAllocPoint * farmPoolLPValue * 10000) 
+
+/**
+ * Calculate Pool APR
+ */
+
+    const poolAPR = await aprUtils.calcPoolFeeAPR("https://api.coingecko.com/api/v3/coins/wrapped-avax/tickers?exchange_ids=traderjoe", 0.0025, WETHWAVAXJLP, WETHWAVAXPrice, avax_addresses.WETH, avax_addresses.WAVAX)
+   
+    // Calculate auto Compound APR
+    const acJoeAPR = aprUtils.calcAutoCompound(joeAPR, 365)
+
+    const ajPoolAPR = aprUtils.calcAutoCompound(poolAPR, 365)
+
+    const totalAPR = acJoeAPR * (1 - POOL_FEE) + ajPoolAPR * (1 - JOE_FEE) 
+    APRData.APR.description = "WETH-WAVAX Pool Fee APR"
+    APRData.APR.value = totalAPR
+
 
     Object.keys(APRData).forEach(key => {
-        APRData[key].formattedValue = numeral(APRData[key].value).format()
         APRData[key].block = avax_blockNumber
         APRData[key].timestamp = Date()
     })
   
     // Finally after all data has been collected and formatted, we set up our database object and call db.updateYETIData() in order to cache our data in our MongoDB database.
 
-    try {
-      const client = db.getClient()
-      db.updateFarmPoolData(APRData, client) 
-    }
-    catch(err) {
-      console.log(err)
-    }
+    return APRData
   }
 
-  module.exports = getTJFarmPoolData
+  module.exports = getWETHWAVAXAPR

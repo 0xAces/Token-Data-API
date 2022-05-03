@@ -9,6 +9,7 @@ const db = require('./utils/db')
 const YETIRoutes = require('./routes/YETI')
 const YUSDRoutes = require('./routes/YUSD')
 const FarmPoolRoutes = require("./routes/FarmPool")
+const CollateralsRoutes = require("./routes/Collaterals")
 const getChainData = require("./utils/getChainData")
 const removeTrailingSlash = require('./middleware/removeTrailingSlash');
 
@@ -51,7 +52,7 @@ app.use(/^\/$/, (req, res) => {
 
 
 // add cached data to req
-app.use('/v1/YUSD', async (req, res, next) => {
+app.use('/YUSD', async (req, res, next) => {
   const client = db.getClient()
   try {
     await db.getCachedYUSDData(client).then(result => req.chainData = result)
@@ -88,9 +89,22 @@ app.use('/v1/FarmPool', async (req, res, next) => {
   next()
 })
 
+app.use('/v1/Collaterals', async (req, res, next) => {
+  const client = db.getClient()
+  try {
+    await db.getCachedCollateralsData(client).then(result => req.chainData = result)
+  }
+  catch(err){
+    console.log("error getting data")
+    console.log(err)
+  }
+  next()
+})
+
 app.use('/v1/YETI', YETIRoutes)
 app.use('/v1/YUSD', YUSDRoutes)
 app.use('/v1/FarmPool', FarmPoolRoutes)
+app.use('/v1/Collaterals', CollateralsRoutes)
 
 app.use((req, res) => {
   res.status(404).json({error: true, message: "Resource not found"})
