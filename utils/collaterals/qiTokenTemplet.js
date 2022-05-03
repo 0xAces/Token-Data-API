@@ -8,7 +8,7 @@ const aprUtils = require("../aprUtils")
 
 const FEE_RATE = .05
 
-const getQiBTCAPR = async (web3s) => {
+const getQi___APR = async (web3s) => {
     // Unpack web3 objects for Ethereum and avax
     const {avax_web3} = web3s
     // // Get Ethereum block number 
@@ -32,7 +32,7 @@ const getQiBTCAPR = async (web3s) => {
 
     // web3.eth.Contract() creates a smart contract object using the ABI and address of the contract which allows you to call all the smart contract functions listed in the ABI. Since we are not supplying a private key to our web3 object, we can only use it for reading on chain data, not for anything requiring signing - which is all we need for this project.
     // Here we instantiate the Ethereum smart contract object
-    let qiToken = new avax_web3.eth.Contract(qiTokenAbi, avax_addresses.qiBTC)
+    let qiToken = new avax_web3.eth.Contract(qiTokenAbi, avax_addresses.qi___)
     let benqiOracle = new avax_web3.eth.Contract(benqiOracleAbi, avax_addresses.BenqiChainLinkOracle)
     let comptroller = new avax_web3.eth.Contract(comptrollerAbi, avax_addresses.Comptroller)
     
@@ -98,7 +98,7 @@ const getQiBTCAPR = async (web3s) => {
     
 
     const totalAPY = (acSupplyAPY + acDistributionAPY) * (1 - FEE_RATE)
-    APRData.APR.description = "qiBTC Supply + Distribution APY"
+    APRData.APR.description = "qi___ Supply + Distribution APY"
     APRData.APR.value = totalAPY
 
 
@@ -112,4 +112,4 @@ const getQiBTCAPR = async (web3s) => {
     return APRData
   }
 
-  module.exports = getQiBTCAPR
+  module.exports = getQi___APR

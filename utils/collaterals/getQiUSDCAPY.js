@@ -60,34 +60,34 @@ const getQiUSDCAPR = async (web3s) => {
      */
 
     const underlyingDecimals = await aprUtils.getUnderlyingDecimals(qiToken, avax_web3)
-    console.log("underlyingDecimals", underlyingDecimals)
+
     const qiTokenTotalSupply = Number(await qiToken.methods.totalSupply().call()) / 10 ** 8
 
-    console.log("qiTokenTotalSupply", qiTokenTotalSupply)
+
     const qiTokenExchangeRate = Number(await qiToken.methods.exchangeRateStored().call()) / 10 ** (10 + underlyingDecimals)
 
-    console.log("qiTokenExchangeRate", qiTokenExchangeRate)
+
 
     const underlyingTotalSupply = qiTokenTotalSupply * qiTokenExchangeRate
 
-    console.log("underlyingTotalSupply", underlyingTotalSupply)
+ 
 
     const avaxSupplyRewardSpeed = Number(await comptroller.methods.supplyRewardSpeeds(1, qiToken.options.address).call()) / 10 ** 18
     const qiSupplyRewardSpeed = Number(await comptroller.methods.supplyRewardSpeeds(0, qiToken.options.address).call()) / 10 ** 18
 
-    console.log("avaxSupplyRewardSpeed", avaxSupplyRewardSpeed)
+    
 
     const avaxPrice = Number(await benqiOracle.methods.getUnderlyingPrice(avax_addresses.qiAVAX).call()) / 10 ** 18
     const qiPrice = Number(await benqiOracle.methods.getUnderlyingPrice(avax_addresses.qiQI).call()) / 10 ** 18
     const underlyingPrice = Number(await benqiOracle.methods.getUnderlyingPrice(qiToken.options.address).call()) / 10 ** 18
 
-    console.log("underlyingPrice", underlyingPrice)
+    
 
     const avaxSupplyDistributionAPR = (avaxSupplyRewardSpeed * 86400 * avaxPrice / (underlyingTotalSupply * underlyingPrice) + 1) ** 365 - 1
     const qiSupplyDistributionAPR = (qiSupplyRewardSpeed * 86400 * qiPrice / (underlyingTotalSupply * underlyingPrice) + 1) ** 365 - 1
     const totalSupplyDistributionAPY = avaxSupplyDistributionAPR + qiSupplyDistributionAPR
     
-    console.log("totalSupplyDistributionAPY", totalSupplyDistributionAPY)
+    
 
     /**
      * Auto Compound
