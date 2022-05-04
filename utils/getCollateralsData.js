@@ -19,10 +19,10 @@ const getaDAIAPY = require("./collaterals/getaDAIAPY")
 const getCollateralsData = async (web3s) => {
     
     let collateralsData = {
-        WAVAX: {APR: {value: "N/A"}},
-        USDC: {APR: {value: "N/A"}},
-        WETH: {APR: {value: "N/A"}},
-        WBTC: {APR: {value: "N/A"}},
+        WAVAX: {APR: {value: 0}},
+        USDC: {APR: {value: 0}},
+        WETH: {APR: {value: 0}},
+        WBTC: {APR: {value: 0}},
         sJOE: {APR: {value: 0.1726}},
         sAVAX: {APR: {value: 0.0593}},
         av3CRV: {APR: {value: 0.0169}},
