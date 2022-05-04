@@ -45,7 +45,7 @@ app.use(morgan('tiny'))
 // Remove trailing slash
 
 app.all('*', (req, res, next) => {
-  res.header("Access-Control-Allow-Origin", ["https://localhost:3000", "https://app.yeti.finance/", "https://beta.yeti.finance/"]);
+  res.header("Access-Control-Allow-Origin", "*");
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Methods', 'GET');
   next();
@@ -53,7 +53,6 @@ app.all('*', (req, res, next) => {
 
 // Routes
 app.use(/^\/$/, (req, res, next) => {
-  
   res.send("Welcome to the YetiFinance API!")
   next()
 })
