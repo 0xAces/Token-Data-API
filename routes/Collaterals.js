@@ -7,6 +7,67 @@ app.get('/', (req, res) => {
   res.json(req.chainData)
 })
 
+// WAVAX
+
+app.get('/WAVAX', (req, res) => {
+  res.json(req.chainData.WAVAX)
+})
+
+app.get('/WAVAX/APR', (req, res) => {
+  res.json(req.chainData.WAVAX.APR.value)
+})
+
+// WETH
+
+app.get('/WETH', (req, res) => {
+  res.json(req.chainData.WETH)
+})
+
+app.get('/WETH/APR', (req, res) => {
+  res.json(req.chainData.WETH.APR.value)
+})
+
+// WBTC
+
+app.get('/WBTC', (req, res) => {
+  res.json(req.chainData.WBTC)
+})
+
+app.get('/WBTC/APR', (req, res) => {
+  res.json(req.chainData.WBTC.APR.value)
+})
+
+// USDC
+
+app.get('/USDC', (req, res) => {
+  res.json(req.chainData.USDC)
+})
+
+app.get('/USDC/APR', (req, res) => {
+  res.json(req.chainData.USDC.APR.value)
+})
+
+// av3CRV
+
+app.get('/av3CRV', (req, res) => {
+  res.json(req.chainData.av3CRV)
+})
+
+app.get('/av3CRV/APR', (req, res) => {
+  res.json(req.chainData.av3CRV.APR.value)
+})
+
+// sJOE
+
+app.get('/sJOE', (req, res) => {
+  res.json(req.chainData.sJOE)
+})
+
+app.get('/sJOE/APR', (req, res) => {
+  res.json(req.chainData.sJOE.APR.value)
+})
+
+
 app.get('/WETHWAVAXJLP', (req, res) => {
     res.json(req.chainData.WETHWAVAXJLP)
   })
@@ -119,6 +180,76 @@ res.json(req.chainData.qiUSDTn.APR.value)
 
 app.get('/qiUSDTn/description', (req, res) => {
   res.json(req.chainData.qiUSDTn.APR.description)
+})
+
+// aUSDC
+
+app.get('/aUSDC', (req, res) => {
+  res.json(req.chainData.aUSDC)
+})
+
+app.get('/aUSDC/APR', (req, res) => {
+res.json(req.chainData.aUSDC.APR.value)
+})
+
+app.get('/aUSDC/description', (req, res) => {
+  res.json(req.chainData.aUSDC.APR.description)
+})
+
+// aWAVAX
+
+app.get('/aWAVAX', (req, res) => {
+  res.json(req.chainData.aWAVAX)
+})
+
+app.get('/aWAVAX/APR', (req, res) => {
+res.json(req.chainData.aWAVAX.APR.value)
+})
+
+app.get('/aWAVAX/description', (req, res) => {
+  res.json(req.chainData.aWAVAX.APR.description)
+})
+
+// aWETH
+
+app.get('/aWETH', (req, res) => {
+  res.json(req.chainData.aWAVAX)
+})
+
+app.get('/aWETH/APR', (req, res) => {
+res.json(req.chainData.aWETH.APR.value)
+})
+
+app.get('/aWETH/description', (req, res) => {
+  res.json(req.chainData.aWETH.APR.description)
+})
+
+// aUSDT
+
+app.get('/aUSDT', (req, res) => {
+  res.json(req.chainData.aUSDT)
+})
+
+app.get('/aUSDT/APR', (req, res) => {
+res.json(req.chainData.aUSDT.APR.value)
+})
+
+app.get('/aUSDT/description', (req, res) => {
+  res.json(req.chainData.aUSDT.APR.description)
+})
+
+// aDAI
+
+app.get('/aDAI', (req, res) => {
+  res.json(req.chainData.aDAI)
+})
+
+app.get('/aDAI/APR', (req, res) => {
+res.json(req.chainData.aDAI.APR.value)
+})
+
+app.get('/aDAI/description', (req, res) => {
+  res.json(req.chainData.aDAI.APR.description)
 })
 
 module.exports = app

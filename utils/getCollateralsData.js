@@ -9,12 +9,23 @@ const getQiBTCAPR = require("./collaterals/getQiBTCAPY")
 const getQiUSDCnAPR = require("./collaterals/getQiUSDCnAPY")
 const getQiUSDTnAPR = require("./collaterals/getQiUSDTnAPY")
 const getQiDAIAPR = require("./collaterals/getQiDAIAPY")
-
+const getaUSDCAPY = require("./collaterals/getaUSDCAPY")
+const getaWAVAXAPY = require("./collaterals/getaWAVAXAPY")
+const getaWETHAPY = require("./collaterals/getaWETHAPY")
+const getaUSDTAPY = require("./collaterals/getaUSDTAPY")
+const getaDAIAPY = require("./collaterals/getaDAIAPY")
 
 // Async function which takes in web3 collection, makes web3 calls to get current on chain data, formats data, and caches formatted data to MongoDB
 const getCollateralsData = async (web3s) => {
     
     let collateralsData = {
+        WAVAX: {APR: {value: "N/A"}},
+        USDC: {APR: {value: "N/A"}},
+        WETH: {APR: {value: "N/A"}},
+        WBTC: {APR: {value: "N/A"}},
+        sJOE: {APR: {value: 0.1726}},
+        sAVAX: {APR: {value: 0.0593}},
+        av3CRV: {APR: {value: 0.0169}},
         WETHWAVAXJLP: null,
         AVAXUSDCJLP: null,
         qiUSDC: null,
@@ -23,7 +34,12 @@ const getCollateralsData = async (web3s) => {
         qiBTC: null,
         qiUSDCn: null,
         qiUSDTn: null,
-        qiDAI: null
+        qiDAI: null,
+        aUSDC: null,
+        aWAVAX: null,
+        aWETH: null,
+        aUSDT: null,
+        aDAI: null,
     }
 
     collateralsData.WETHWAVAXJLP = await getWETHWAVAXAPR(web3s)
@@ -35,6 +51,12 @@ const getCollateralsData = async (web3s) => {
     collateralsData.qiUSDCn = await getQiUSDCnAPR(web3s)
     collateralsData.qiUSDTn = await getQiUSDTnAPR(web3s)
     collateralsData.qiDAI = await getQiDAIAPR(web3s)
+    collateralsData.aUSDC = await getaUSDCAPY(web3s)
+    collateralsData.aWAVAX = await getaWAVAXAPY(web3s)
+    collateralsData.aWETH = await getaUSDTAPY(web3s)
+    collateralsData.aDAI = await getaDAIAPY(web3s)
+    collateralsData.aWETH = await getaWETHAPY(web3s)
+    
     // Finally after all data has been collected and formatted, we set up our database object and call db.updateYETIData() in order to cache our data in our MongoDB database.
 
     try {
