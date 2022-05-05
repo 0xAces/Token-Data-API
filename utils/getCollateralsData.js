@@ -1,14 +1,14 @@
 const numeral = require("numeral") // NPM package for formatting numbers
 const db = require("./db") // Util for setting up DB and main DB methods
-const getWETHWAVAXAPR = require("./collaterals/getWETHWAVAXAPR")
-const getAVAXUSDCAPR = require("./collaterals/getAVAXUSDCAPR")
-const getQiUSDCAPR = require("./collaterals/getQiUSDCAPY")
-const getQiAVAXAPR = require("./collaterals/getQiAVAXAPY")
-const getQiETHAPR = require("./collaterals/getQiETHAPY")
-const getQiBTCAPR = require("./collaterals/getQiBTCAPY")
-const getQiUSDCnAPR = require("./collaterals/getQiUSDCnAPY")
-const getQiUSDTnAPR = require("./collaterals/getQiUSDTnAPY")
-const getQiDAIAPR = require("./collaterals/getQiDAIAPY")
+const getWETHWAVAXAPY = require("./collaterals/getWETHWAVAXAPY")
+const getAVAXUSDCAPY = require("./collaterals/getAVAXUSDCAPY")
+const getQiUSDCAPY = require("./collaterals/getQiUSDCAPY")
+const getQiAVAXAPY = require("./collaterals/getQiAVAXAPY")
+const getQiETHAPY = require("./collaterals/getQiETHAPY")
+const getQiBTCAPY = require("./collaterals/getQiBTCAPY")
+const getQiUSDCnAPY = require("./collaterals/getQiUSDCnAPY")
+const getQiUSDTnAPY = require("./collaterals/getQiUSDTnAPY")
+const getQiDAIAPY = require("./collaterals/getQiDAIAPY")
 const getaUSDCAPY = require("./collaterals/getaUSDCAPY")
 const getaWAVAXAPY = require("./collaterals/getaWAVAXAPY")
 const getaWETHAPY = require("./collaterals/getaWETHAPY")
@@ -19,13 +19,13 @@ const getaDAIAPY = require("./collaterals/getaDAIAPY")
 const getCollateralsData = async (web3s) => {
     
     let collateralsData = {
-        WAVAX: {APR: {value: 0}},
-        USDC: {APR: {value: 0}},
-        WETH: {APR: {value: 0}},
-        WBTC: {APR: {value: 0}},
-        sJOE: {APR: {value: 0.1726}},
-        sAVAX: {APR: {value: 0.0593}},
-        av3CRV: {APR: {value: 0.0169}},
+        WAVAX: {APY: {value: 0}},
+        USDC: {APY: {value: 0}},
+        WETH: {APY: {value: 0}},
+        WBTC: {APY: {value: 0}},
+        sJOE: {APY: {value: 0.1726}},
+        sAVAX: {APY: {value: 0.0593}},
+        av3CRV: {APY: {value: 0.0169}},
         WETHWAVAXJLP: null,
         AVAXUSDCJLP: null,
         qiUSDC: null,
@@ -42,15 +42,15 @@ const getCollateralsData = async (web3s) => {
         aDAI: null,
     }
 
-    collateralsData.WETHWAVAXJLP = await getWETHWAVAXAPR(web3s)
-    collateralsData.AVAXUSDCJLP = await getAVAXUSDCAPR(web3s)
-    collateralsData.qiUSDC = await getQiUSDCAPR(web3s)
-    collateralsData.qiAVAX = await getQiAVAXAPR(web3s)
-    collateralsData.qiETH = await getQiETHAPR(web3s)
-    collateralsData.qiBTC = await getQiBTCAPR(web3s)
-    collateralsData.qiUSDCn = await getQiUSDCnAPR(web3s)
-    collateralsData.qiUSDTn = await getQiUSDTnAPR(web3s)
-    collateralsData.qiDAI = await getQiDAIAPR(web3s)
+    collateralsData.WETHWAVAXJLP = await getWETHWAVAXAPY(web3s)
+    collateralsData.AVAXUSDCJLP = await getAVAXUSDCAPY(web3s)
+    collateralsData.qiUSDC = await getQiUSDCAPY(web3s)
+    collateralsData.qiAVAX = await getQiAVAXAPY(web3s)
+    collateralsData.qiETH = await getQiETHAPY(web3s)
+    collateralsData.qiBTC = await getQiBTCAPY(web3s)
+    collateralsData.qiUSDCn = await getQiUSDCnAPY(web3s)
+    collateralsData.qiUSDTn = await getQiUSDTnAPY(web3s)
+    collateralsData.qiDAI = await getQiDAIAPY(web3s)
     collateralsData.aUSDC = await getaUSDCAPY(web3s)
     collateralsData.aWAVAX = await getaWAVAXAPY(web3s)
     collateralsData.aWETH = await getaUSDTAPY(web3s)

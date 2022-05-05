@@ -4,7 +4,7 @@ const benqiOracleAbi = require("../../abi/BenqiOracleAbi.json")
 const addresses = require("../../addresses/qiTokens")
 const numeral = require("numeral") // NPM package for formatting numbers
 const SECONDS_PER_YEAR = 31622400
-const aprUtils = require("../aprUtils")
+const apyUtils = require("../apyUtils")
 
 const FEE_RATE = .05
 

@@ -5,7 +5,7 @@ const convert = (num, decimal) => {
     return Math.round((num / (10*10**(decimal-3))))/100
 }
 
-async function calcPoolFeeAPR(apiUrl, feeRate, LPContractObject, LPPrice, base, target) {
+async function calcPoolFeeAPY(apiUrl, feeRate, LPContractObject, LPPrice, base, target) {
     async function getVolume() {
         let response =  await fetch(apiUrl)
         let data = await response.json()
@@ -28,7 +28,7 @@ async function calcPoolFeeAPR(apiUrl, feeRate, LPContractObject, LPPrice, base, 
     return yearlyFees
 }
 
-async function calcPoolFeeAPRTest(apiUrl, feeRate, LPContractObject, LPPrice, base, target) {
+async function calcPoolFeeAPYTest(apiUrl, feeRate, LPContractObject, LPPrice, base, target) {
     async function getVolume() {
         let response =  await fetch(apiUrl)
         let data = await response.json()
@@ -54,7 +54,7 @@ const calcAutoCompound = (apr, num) => {
     return (((apr / num) + 1) ** num) - 1
 }
 
-const calcQiSupplyAPR = (supplyRate) => {
+const calcQiSupplyAPY = (supplyRate) => {
     return (supplyRate / 10 ** 18 * 86400 + 1) ** 365 - 1
 }
 
@@ -73,9 +73,9 @@ async function getUnderlyingDecimals(qiToken, avax_web3) {
 }
 
 module.exports = {
-    calcPoolFeeAPR,
-    calcPoolFeeAPRTest,
+    calcPoolFeeAPY,
+    calcPoolFeeAPYTest,
     calcAutoCompound,
-    calcQiSupplyAPR,
+    calcQiSupplyAPY,
     getUnderlyingDecimals
 }

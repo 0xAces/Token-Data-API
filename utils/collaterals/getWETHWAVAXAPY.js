@@ -6,13 +6,13 @@ const addresses = require("../../addresses/FarmPool")
 const numeral = require("numeral") // NPM package for formatting numbers
 const db = require("../db") // Util for setting up DB and main DB methods
 const SECONDS_PER_YEAR = 31622400
-const aprUtils = require("../aprUtils")
+const apyUtils = require("../apyUtils")
 
 const POOL_FEE = 0.1
 const JOE_FEE = 0.6
 const PID = 1
 // Async function which takes in web3 collection, makes web3 calls to get current on chain data, formats data, and caches formatted data to MongoDB
-const getWETHWAVAXAPR = async (web3s) => {
+const getWETHWAVAXAPY = async (web3s) => {
     // Unpack web3 objects for Ethereum and avax
     const {avax_web3} = web3s
     // // Get Ethereum block number 
@@ -48,12 +48,12 @@ const getWETHWAVAXAPR = async (web3s) => {
 
     // Make tokenData object. This object is used for storing formatted and calculated results from web3 calls from both Ethereum and avax web3 objects. It is divided into 3 sections for data on avax, Ethereum, and aggregate data from both chains in 'combined'.
 
-    let APRData = {
-        APR: {description: null, value: null},
+    let APYData = {
+        APY: {description: null, value: null},
     }
 
     /**
-     * Calculate JOE APR
+     * Calculate JOE APY
      */
     const LPStaked = Number(await WETHWAVAXJLP.methods.balanceOf(avax_addresses.BoostedTJMCV3).call())
     
@@ -75,32 +75,32 @@ const getWETHWAVAXAPR = async (web3s) => {
     
     const JOEPrice = Number(await JOEPriceFeed.methods.fetchPrice_v().call())
 
-    const joeAPR = joePerSec * farmPoolAllocPoint * JOEPrice * SECONDS_PER_YEAR * veJoeShareBp / (totalAllocPoint * farmPoolLPValue * 10000) 
+    const joeAPY = joePerSec * farmPoolAllocPoint * JOEPrice * SECONDS_PER_YEAR * veJoeShareBp / (totalAllocPoint * farmPoolLPValue * 10000) 
 
 /**
- * Calculate Pool APR
+ * Calculate Pool APY
  */
 
-    const poolAPR = await aprUtils.calcPoolFeeAPR("https://api.coingecko.com/api/v3/coins/wrapped-avax/tickers?exchange_ids=traderjoe", 0.0025, WETHWAVAXJLP, WETHWAVAXPrice, avax_addresses.WETH, avax_addresses.WAVAX)
+    const poolAPY = await apyUtils.calcPoolFeeAPY("https://api.coingecko.com/api/v3/coins/wrapped-avax/tickers?exchange_ids=traderjoe", 0.0025, WETHWAVAXJLP, WETHWAVAXPrice, avax_addresses.WETH, avax_addresses.WAVAX)
    
-    // Calculate auto Compound APR
-    const acJoeAPR = aprUtils.calcAutoCompound(joeAPR, 365)
+    // Calculate auto Compound APY
+    const acJoeAPY = apyUtils.calcAutoCompound(joeAPY, 365)
 
-    const ajPoolAPR = aprUtils.calcAutoCompound(poolAPR, 365)
+    const ajPoolAPY = apyUtils.calcAutoCompound(poolAPY, 365)
 
-    const totalAPR = acJoeAPR * (1 - POOL_FEE) + ajPoolAPR * (1 - JOE_FEE) 
-    APRData.APR.description = "WETH-WAVAX Pool Fee APR"
-    APRData.APR.value = totalAPR
+    const totalAPY = acJoeAPY * (1 - POOL_FEE) + ajPoolAPY * (1 - JOE_FEE) 
+    APYData.APY.description = "WETH-WAVAX Pool Fee APY"
+    APYData.APY.value = totalAPY
 
 
-    Object.keys(APRData).forEach(key => {
-        APRData[key].block = avax_blockNumber
-        APRData[key].timestamp = Date()
+    Object.keys(APYData).forEach(key => {
+        APYData[key].block = avax_blockNumber
+        APYData[key].timestamp = Date()
     })
   
     // Finally after all data has been collected and formatted, we set up our database object and call db.updateYETIData() in order to cache our data in our MongoDB database.
 
-    return APRData
+    return APYData
   }
 
-  module.exports = getWETHWAVAXAPR
+  module.exports = getWETHWAVAXAPY

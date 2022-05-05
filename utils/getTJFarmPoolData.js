@@ -7,7 +7,7 @@ const rewarderAbi = require("../abi/RewarderAbi.json")
 const numeral = require("numeral") // NPM package for formatting numbers
 const db = require("./db") // Util for setting up DB and main DB methods
 const SECONDS_PER_YEAR = 31622400
-const aprUtils = require("./aprUtils")
+const apyUtils = require("./apyUtils")
 // Async function which takes in web3 collection, makes web3 calls to get current on chain data, formats data, and caches formatted data to MongoDB
 const getTJFarmPoolData = async (web3s) => {
     // Unpack web3 objects for Ethereum and avax
@@ -47,7 +47,7 @@ const getTJFarmPoolData = async (web3s) => {
 
     // Make tokenData object. This object is used for storing formatted and calculated results from web3 calls from both Ethereum and avax web3 objects. It is divided into 3 sections for data on avax, Ethereum, and aggregate data from both chains in 'combined'.
 
-    let APRData = {
+    let APYData = {
         pool: {description: null, value: null},
         JOE: {description: null, value: null},
         YETI: {description: null, value: null}
@@ -58,7 +58,7 @@ const getTJFarmPoolData = async (web3s) => {
     
 
     /**
-     * Calculate JOE APR
+     * Calculate JOE APY
      */
     const joePerSec = Number(await JOEMC.methods.joePerSec().call())
     
@@ -70,41 +70,41 @@ const getTJFarmPoolData = async (web3s) => {
 
     
     
-    APRData.JOE.description = "TJ Farming Pool JOE APR"
-    APRData.JOE.value = joePerSec * farmPoolAllocPoint * JOEPrice * SECONDS_PER_YEAR / (totalAllocPoint * farmPoolLPValue) 
+    APYData.JOE.description = "TJ Farming Pool JOE APY"
+    APYData.JOE.value = joePerSec * farmPoolAllocPoint * JOEPrice * SECONDS_PER_YEAR / (totalAllocPoint * farmPoolLPValue) 
 
     /**
-     * Calculate YETI APR
+     * Calculate YETI APY
      */
     const YETIPerSecond = Number(await Rewarder.methods.tokenPerSec().call())
 
     const YETIPrice = Number(await YETIPriceFeed.methods.fetchPrice_v().call())
 
-    APRData.YETI.description = "TJ Farming Pool YETI APR"
-    APRData.YETI.value = YETIPerSecond * YETIPrice * SECONDS_PER_YEAR / farmPoolLPValue
+    APYData.YETI.description = "TJ Farming Pool YETI APY"
+    APYData.YETI.value = YETIPerSecond * YETIPrice * SECONDS_PER_YEAR / farmPoolLPValue
 
 
     /**
-     * Calculate Pool APR
+     * Calculate Pool APY
      */
 
-    const poolAPR = await aprUtils.calcPoolFeeAPR("https://api.coingecko.com/api/v3/coins/yeti-finance/tickers?exchange_ids=traderjoe", 0.0025, YETIAVAXJLP, YETIAVAXJLPPrice, avax_addresses.YETI, avax_addresses.WAVAX)
+    const poolAPY = await apyUtils.calcPoolFeeAPY("https://api.coingecko.com/api/v3/coins/yeti-finance/tickers?exchange_ids=traderjoe", 0.0025, YETIAVAXJLP, YETIAVAXJLPPrice, avax_addresses.YETI, avax_addresses.WAVAX)
     
 
-    APRData.pool.description = "TJ Farming Pool Trading Fee APR"
-    APRData.pool.value = poolAPR
+    APYData.pool.description = "TJ Farming Pool Trading Fee APY"
+    APYData.pool.value = poolAPY
 
-    Object.keys(APRData).forEach(key => {
-        APRData[key].formattedValue = numeral(APRData[key].value).format()
-        APRData[key].block = avax_blockNumber
-        APRData[key].timestamp = Date()
+    Object.keys(APYData).forEach(key => {
+        APYData[key].formattedValue = numeral(APYData[key].value).format()
+        APYData[key].block = avax_blockNumber
+        APYData[key].timestamp = Date()
     })
   
     // Finally after all data has been collected and formatted, we set up our database object and call db.updateYETIData() in order to cache our data in our MongoDB database.
 
     try {
       const client = db.getClient()
-      db.updateFarmPoolData(APRData, client) 
+      db.updateFarmPoolData(APYData, client) 
     }
     catch(err) {
       console.log(err)
