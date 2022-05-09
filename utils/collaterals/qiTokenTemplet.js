@@ -47,7 +47,7 @@ const getQi___APY = async (web3s) => {
             avaxSupplyDistributionAPY: null,
             qiSupplyDistributionAPY: null,
             totalSupplyDistributionAPY: null,
-            acSupplyAPY: null,  
+            // acSupplyAPY: null,  
         },
     }
 
@@ -96,12 +96,12 @@ const getQi___APY = async (web3s) => {
     /**
      * Auto Compound
      */
-    const acSupplyAPY = apyUtils.calcAutoCompound(supplyAPY, 365)
+    // const acSupplyAPY = apyUtils.calcAutoCompound(supplyAPY, 365)
 
-    APYData.APY.acSupplyAPY = acSupplyAPY
+    // APYData.APY.acSupplyAPY = acSupplyAPY
     
 
-    const totalAPY = (acSupplyAPY + totalSupplyDistributionAPY) * (1 - fees.qi___)
+    const totalAPY = (supplyAPY + totalSupplyDistributionAPY) * (1 - fees.qi___)
     APYData.APY.description = "qi___ Supply + Distribution APY"
     APYData.APY.value = totalAPY
 

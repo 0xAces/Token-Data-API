@@ -3,10 +3,8 @@ const comptrollerAbi = require("../../abi/ComptrollerAbi.json")
 const benqiOracleAbi = require("../../abi/BenqiOracleAbi.json")
 const addresses = require("../../addresses/qiTokens")
 const numeral = require("numeral") // NPM package for formatting numbers
-const SECONDS_PER_YEAR = 31622400
-const apyUtils = require("../apyUtils")
 
-const FEE_RATE = .2
+const apyUtils = require("../apyUtils")
 
 const getQiUSDCnAPY = async (web3s) => {
     // Unpack web3 objects for Ethereum and avax
@@ -24,7 +22,7 @@ const getQiUSDCnAPY = async (web3s) => {
         console.log(err)
     }
     // Collect addresses in one 'addresses' object
-    const {avax_addresses} = addresses
+    const {avax_addresses, fees} = addresses
     // Set number formatting default
     numeral.defaultFormat("0,0");
 
@@ -36,10 +34,7 @@ const getQiUSDCnAPY = async (web3s) => {
     let benqiOracle = new avax_web3.eth.Contract(benqiOracleAbi, avax_addresses.BenqiChainLinkOracle)
     let comptroller = new avax_web3.eth.Contract(comptrollerAbi, avax_addresses.Comptroller)
     
-    // For converting to proper number of decimals. We use this to convert from raw numbers returned from web3 calls to human readable formatted numbers based on the decimals for each token.  
-    const convert = (num, decimal) => {
-        return Math.round((num / (10*10**(decimal-3))))/100
-    }
+
 
     // Make tokenData object. This object is used for storing formatted and calculated results from web3 calls from both Ethereum and avax web3 objects. It is divided into 3 sections for data on avax, Ethereum, and aggregate data from both chains in 'combined'.
 
@@ -47,13 +42,12 @@ const getQiUSDCnAPY = async (web3s) => {
         APY: {
             description: null, 
             value: null,
-            feeRate: FEE_RATE,
+            feeRate: fees.qiUSDCn,
             supplyAPY: null,
             avaxSupplyDistributionAPY: null,
             qiSupplyDistributionAPY: null,
             totalSupplyDistributionAPY: null,
-            acSupplyAPY: null,
-            acTotalSupplyDistributionAPY: null
+            // acSupplyAPY: null,  
         },
     }
 
@@ -102,14 +96,12 @@ const getQiUSDCnAPY = async (web3s) => {
     /**
      * Auto Compound
      */
-    const acSupplyAPY = apyUtils.calcAutoCompound(supplyAPY, 365)
-    const acDistributionAPY = apyUtils.calcAutoCompound(totalSupplyDistributionAPY, 365)
+    // const acSupplyAPY = apyUtils.calcAutoCompound(supplyAPY, 365)
 
-    APYData.APY.acSupplyAPY = acSupplyAPY
-    APYData.APY.acTotalSupplyDistributionAPY = acDistributionAPY
+    // APYData.APY.acSupplyAPY = acSupplyAPY
     
 
-    const totalAPY = (acSupplyAPY + acDistributionAPY) * (1 - FEE_RATE)
+    const totalAPY = (supplyAPY + totalSupplyDistributionAPY) * (1 - fees.qiUSDCn)
     APYData.APY.description = "qiUSDCn Supply + Distribution APY"
     APYData.APY.value = totalAPY
 
