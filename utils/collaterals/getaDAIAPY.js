@@ -1,12 +1,11 @@
-const qiTokenAbi = require("../../abi/QiTokenAbi.json")
-const comptrollerAbi = require("../../abi/ComptrollerAbi.json")
-const benqiOracleAbi = require("../../abi/BenqiOracleAbi.json")
-const addresses = require("../../addresses/qiTokens")
+const poolAbi = require("../../abi/AavePoolAbi.json")
+const addresses = require("../../addresses/aTokens")
+const underlyingTokens = require("../../addresses/underlyingTokens")
 const numeral = require("numeral") // NPM package for formatting numbers
-const SECONDS_PER_YEAR = 31622400
 const apyUtils = require("../apyUtils")
 
-const FEE_RATE = .05
+const RAY = 10 ** 27
+const SECONDS_PER_YEAR = 31536000
 
 const getaDAIAPY = async (web3s) => {
     // Unpack web3 objects for Ethereum and avax
@@ -24,25 +23,48 @@ const getaDAIAPY = async (web3s) => {
         console.log(err)
     }
     // Collect addresses in one 'addresses' object
-    const {avax_addresses} = addresses
-    // Set number formatting default
-
-    // Make tokenData object. This object is used for storing formatted and calculated results from web3 calls from both Ethereum and avax web3 objects. It is divided into 3 sections for data on avax, Ethereum, and aggregate data from both chains in 'combined'.
-
-    let APRData = {
-        APR: {description: null, value: null},
+    const {avax_addresses, fees} = addresses
+    const underlyingTokenAddress = underlyingTokens.avax_addresses
+    
+    let APYData = {
+        APY: {
+            description: null, 
+            value: null,
+            feeRate: fees.qiUSDTn,
+            supplyAPY: null,
+            avaxSupplyDistributionAPY: null,
+            qiSupplyDistributionAPY: null,
+            totalSupplyDistributionAPY: null,
+            acSupplyAPY: null,
+            acTotalSupplyDistributionAPY: null
+        },
     }
 
+    let pool = new avax_web3.eth.Contract(poolAbi, avax_addresses.Pool)
+    const reserveData = await pool.methods.getReserveData(underlyingTokenAddress.DAI).call()
 
+    const { liquidityIndex, variableBorrowIndex, currentLiquidityRate, 
+        currentVariableBorrowRate, currentStableBorrowRate,
+         aTokenAddress, stableDebtTokenAddress, variableDebtTokenAddress} = reserveData
 
-    Object.keys(APRData).forEach(key => {
-        APRData[key].block = avax_blockNumber
-        APRData[key].timestamp = Date()
+    const depositAPR = +currentLiquidityRate / RAY
+    const depositAPY = ((1 + (depositAPR / SECONDS_PER_YEAR)) ** SECONDS_PER_YEAR) - 1
+
+    console.log(depositAPY)
+
+    
+    
+    
+    
+
+    Object.keys(APYData).forEach(key => {
+        APYData[key].block = avax_blockNumber
+        APYData[key].timestamp = Date()
     })
   
     // Finally after all data has been collected and formatted, we set up our database object and call db.updateYETIData() in order to cache our data in our MongoDB database.
 
-    return APRData
+    return APYData
   }
 
   module.exports = getaDAIAPY

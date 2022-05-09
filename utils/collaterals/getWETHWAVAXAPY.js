@@ -86,9 +86,9 @@ const getWETHWAVAXAPY = async (web3s) => {
     // Calculate auto Compound APY
     const acJoeAPY = apyUtils.calcAutoCompound(joeAPY, 365)
 
-    const ajPoolAPY = apyUtils.calcAutoCompound(poolAPY, 365)
+    const acPoolAPY = apyUtils.calcAutoCompound(poolAPY, 365)
 
-    const totalAPY = acJoeAPY * (1 - POOL_FEE) + ajPoolAPY * (1 - JOE_FEE) 
+    const totalAPY = acJoeAPY * (1 - JOE_FEE) + acPoolAPY
     APYData.APY.description = "WETH-WAVAX Pool Fee APY"
     APYData.APY.value = totalAPY
 
