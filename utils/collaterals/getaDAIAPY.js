@@ -1,4 +1,7 @@
 const poolAbi = require("../../abi/AavePoolAbi.json")
+const poolDataProviderAbi = require("../../abi/AavePoolDataProviderAbi.json")
+const ERC20Abi = require("../../abi/ERC20Abi.json")
+const incentivesAbi = require("../../abi/AaveIncentiveAbi.json")
 const addresses = require("../../addresses/aTokens")
 const underlyingTokens = require("../../addresses/underlyingTokens")
 const numeral = require("numeral") // NPM package for formatting numbers
@@ -33,14 +36,16 @@ const getaDAIAPY = async (web3s) => {
             feeRate: fees.qiUSDTn,
             supplyAPY: null,
             avaxSupplyDistributionAPY: null,
-            qiSupplyDistributionAPY: null,
-            totalSupplyDistributionAPY: null,
-            acSupplyAPY: null,
-            acTotalSupplyDistributionAPY: null
+            totalSupplyDistributionAPY: null
         },
     }
 
     let pool = new avax_web3.eth.Contract(poolAbi, avax_addresses.Pool)
+    let incentives = new avax_web3.eth.Contract(incentivesAbi, avax_addresses.Incentives)
+
+    /**
+     * Supply APY
+     */
     const reserveData = await pool.methods.getReserveData(underlyingTokenAddress.DAI).call()
 
     const { liquidityIndex, variableBorrowIndex, currentLiquidityRate, 
@@ -50,8 +55,23 @@ const getaDAIAPY = async (web3s) => {
     const depositAPR = +currentLiquidityRate / RAY
     const depositAPY = ((1 + (depositAPR / SECONDS_PER_YEAR)) ** SECONDS_PER_YEAR) - 1
 
-    console.log(depositAPY)
+    APYData.supplyAPY = depositAPY
 
+
+    /**
+     * Incentive WAVAX APY
+     */
+    let poolDataProvider = new avax_web3.eth.Contract(poolDataProviderAbi, avax_addresses.PoolDataProvider)
+    const assetData = await incentives.methods.getRewardsData(aTokenAddress, underlyingTokenAddress.WAVAX).call()
+    const aEmissionPerYear = +assetData[1] * SECONDS_PER_YEAR
+
+    let aToken = new avax_web3.eth.Contract(ERC20Abi, avax_addresses.aDAI)
+    const totalATokenSupply = Number(await aToken.methods.totalSupply().call())
+    console.log(totalATokenSupply)
+    // const incentiveDepositAPRPercent = 100 * (aEmissionPerYear * REWARD_PRICE_ETH * WEI_DECIMALS)/
+    // (totalATokenSupply * TOKEN_PRICE_ETH * UNDERLYING_TOKEN_DECIMALS)
+
+    
     
     
     
