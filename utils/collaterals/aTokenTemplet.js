@@ -12,7 +12,7 @@ const apyUtils = require("../apyUtils")
 const RAY = 10 ** 27
 const SECONDS_PER_YEAR = 31536000
 
-const getaDAIAPY = async (web3s) => {
+const geta___APY = async (web3s) => {
     // Unpack web3 objects for Ethereum and avax
     const {avax_web3} = web3s
     // // Get Ethereum block number 
@@ -35,7 +35,7 @@ const getaDAIAPY = async (web3s) => {
         APY: {
             description: null, 
             value: null,
-            feeRate: fees.aDAI,
+            feeRate: fees.a___,
             supplyAPY: null,
             avaxSupplyDistributionAPY: null,
         },
@@ -47,7 +47,7 @@ const getaDAIAPY = async (web3s) => {
     /**
      * Supply APY
      */
-    const reserveData = await pool.methods.getReserveData(underlyingTokenAddress.DAI).call()
+    const reserveData = await pool.methods.getReserveData(underlyingTokenAddress.___).call()
 
     const { liquidityIndex, variableBorrowIndex, currentLiquidityRate, 
         currentVariableBorrowRate, currentStableBorrowRate,
@@ -63,9 +63,9 @@ const getaDAIAPY = async (web3s) => {
      * Incentive WAVAX APY
      */
     
-    let underlyingToken = new avax_web3.eth.Contract(ERC20Abi, underlyingTokenAddress.DAI)
-    let aToken = new avax_web3.eth.Contract(ERC20Abi, avax_addresses.aDAI)
-    let underlyingPriceFeed = new avax_web3.eth.Contract(priceFeedAbi, priceFeedAddresses.DAI)
+    let underlyingToken = new avax_web3.eth.Contract(ERC20Abi, underlyingTokenAddress.___)
+    let aToken = new avax_web3.eth.Contract(ERC20Abi, avax_addresses.a___)
+    let underlyingPriceFeed = new avax_web3.eth.Contract(priceFeedAbi, priceFeedAddresses.___)
     let avaxPriceFeed = new avax_web3.eth.Contract(priceFeedAbi, priceFeedAddresses.AVAX)
 
     const assetData = await incentives.methods.getRewardsData(aTokenAddress, underlyingTokenAddress.WAVAX).call()
@@ -85,8 +85,8 @@ const getaDAIAPY = async (web3s) => {
     const incentiveDepositAPY = apyUtils.calcAutoCompound(incentiveDepositAPR, 365)
     APYData.APY.avaxSupplyDistributionAPY = incentiveDepositAPY
     
-    APYData.APY.description = "aDAI Supply + Distribution APY"
-    APYData.APY.value = (incentiveDepositAPY + depositAPY) * (1 - fees.aDAI)
+    APYData.APY.description = "a___ Supply + Distribution APY"
+    APYData.APY.value = (incentiveDepositAPY + depositAPY) * (1 - fees.a___)
     
 
     
@@ -101,4 +101,4 @@ const getaDAIAPY = async (web3s) => {
     return APYData
   }
 
-  module.exports = getaDAIAPY
+  module.exports = geta___APY
