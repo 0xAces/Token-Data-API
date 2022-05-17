@@ -64,10 +64,8 @@ const getPLPPoolData = async (web3s) => {
                 value: null
             },
             Deposits: {
-                value: null
-            },
-            DepositsUSD: {
-                value: null
+                value: null,
+                usd: null
             }
         },
         YUSD: {
@@ -81,10 +79,8 @@ const getPLPPoolData = async (web3s) => {
                 value: null
             },
             Deposits: {
-                value: null
-            },
-            DepositsUSD: {
-                value: null
+                value: null,
+                usd: null
             }
         }
 
@@ -128,7 +124,7 @@ const getPLPPoolData = async (web3s) => {
     APRData.USDC.YETI.value = USDCYETIAPR
     APRData.USDC.TotalBase.value = USDCYETIAPR + USDCPTPBaseAPR
     APRData.USDC.Deposits.value = totalUSDCDeposited
-    APRData.USDC.DepositsUSD.value = USDCLPValue
+    APRData.USDC.Deposits.usd = USDCLPValue
     /**
      * YUSD rewards
      */
@@ -158,7 +154,7 @@ const getPLPPoolData = async (web3s) => {
     APRData.YUSD.YETI.value = YUSDYETIAPR
     APRData.YUSD.TotalBase.value = YUSDYETIAPR + YUSDPTPBaseAPR
     APRData.YUSD.Deposits.value = totalYUSDDeposited
-    APRData.YUSD.DepositsUSD.value = YUSDLPValue
+    APRData.YUSD.Deposits.usd = YUSDLPValue
 
     APRData.USDC.description = "Platypus Pool USDC Data"
     APRData.YUSD.description = "Platypus Pool YUSD Data"
