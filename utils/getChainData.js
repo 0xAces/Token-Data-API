@@ -18,6 +18,8 @@ const getTJFarmPoolData = require("./getTJFarmPoolData")
 const getCollateralsData = require("./getCollateralsData")
 
 const getPLPPoolData = require("./getPLPPoolData")
+
+const getCurvePoolData = require("./getCurvePoolData")
 // const getPriceData = require("./getPriceData") 
 
 // Function to setup web3 objects for chains to be queried.
@@ -89,6 +91,8 @@ const updateData = async (web3_collection) => {
     getCollateralsData(web3_collection)
 
     getPLPPoolData(web3_collection)
+
+    getCurvePoolData(web3_collection)
 
   })
 

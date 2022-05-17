@@ -11,6 +11,7 @@ const YUSDRoutes = require('./routes/YUSD')
 const FarmPoolRoutes = require("./routes/FarmPool")
 const CollateralsRoutes = require("./routes/Collaterals")
 const PLPPoolRoutes = require("./routes/PLPPool")
+const CurvePoolRoutes = require("./routes/CurvePool")
 const getChainData = require("./utils/getChainData")
 const removeTrailingSlash = require('./middleware/removeTrailingSlash');
 
@@ -114,6 +115,19 @@ app.use('/v1/PLPPool', async (req, res, next) => {
   next()
 })
 
+app.use('/v1/CurvePool', async (req, res, next) => {
+  
+  const client = db.getClient()
+  try {
+    await db.getCachedCurvePoolData(client).then(result => req.chainData = result)
+  }
+  catch(err){
+    console.log("error getting data")
+    console.log(err)
+  }
+  next()
+})
+
 app.use('/v1/Collaterals', async (req, res, next) => {
   
   const client = db.getClient()
@@ -132,6 +146,7 @@ app.use('/v1/YUSD', YUSDRoutes)
 app.use('/v1/FarmPool', FarmPoolRoutes)
 app.use('/v1/Collaterals', CollateralsRoutes)
 app.use('/v1/PLPPool', PLPPoolRoutes)
+app.use('/v1/CurvePool', CurvePoolRoutes)
 
 app.use((req, res) => {
   res.status(404).json({error: true, message: "Resource not found"})

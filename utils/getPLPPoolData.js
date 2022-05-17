@@ -62,6 +62,12 @@ const getPLPPoolData = async (web3s) => {
             },
             TotalBase: {
                 value: null
+            },
+            Deposits: {
+                value: null
+            },
+            DepositsUSD: {
+                value: null
             }
         },
         YUSD: {
@@ -72,6 +78,12 @@ const getPLPPoolData = async (web3s) => {
                 value: null
             },
             TotalBase: {
+                value: null
+            },
+            Deposits: {
+                value: null
+            },
+            DepositsUSD: {
                 value: null
             }
         }
@@ -115,7 +127,8 @@ const getPLPPoolData = async (web3s) => {
     APRData.USDC.PTPBase.value = USDCPTPBaseAPR
     APRData.USDC.YETI.value = USDCYETIAPR
     APRData.USDC.TotalBase.value = USDCYETIAPR + USDCPTPBaseAPR
-
+    APRData.USDC.Deposits.value = totalUSDCDeposited
+    APRData.USDC.DepositsUSD.value = USDCLPValue
     /**
      * YUSD rewards
      */
@@ -144,12 +157,13 @@ const getPLPPoolData = async (web3s) => {
     APRData.YUSD.PTPBase.value = YUSDPTPBaseAPR
     APRData.YUSD.YETI.value = YUSDYETIAPR
     APRData.YUSD.TotalBase.value = YUSDYETIAPR + YUSDPTPBaseAPR
+    APRData.YUSD.Deposits.value = totalYUSDDeposited
+    APRData.YUSD.DepositsUSD.value = YUSDLPValue
 
-    APRData.USDC.description = "Platypus Pool USDC Base APR"
-    APRData.YUSD.description = "Platypus Pool YUSD Base APR"
+    APRData.USDC.description = "Platypus Pool USDC Data"
+    APRData.YUSD.description = "Platypus Pool YUSD Data"
 
     Object.keys(APRData).forEach(key => {
-        APRData[key].formattedValue = numeral(APRData[key].value).format()
         APRData[key].block = avax_blockNumber
         APRData[key].timestamp = Date()
     })
