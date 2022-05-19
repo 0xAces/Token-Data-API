@@ -4,6 +4,7 @@ const MCPV3Abi = require("../abi/MasterPLPV3Abi.json") // Get the token ABI for 
 const rewarderAbi = require("../abi/PLPRewarderAbi.json")
 const priceFeedAbi = require("../abi/PriceFeedAbi.json")
 const ERC20Abi = require("../abi/ERC20Abi.json")
+const PLPAssetAbi = require("../abi/PLPAssetAbi.json")
 
 const numeral = require("numeral") // NPM package for formatting numbers
 const db = require("./db") // Util for setting up DB and main DB methods
@@ -44,6 +45,8 @@ const getPLPPoolData = async (web3s) => {
     let USDCPriceFeed = new avax_web3.eth.Contract(priceFeedAbi, priceFeeds.USDC)
     let USDCRewarder = new avax_web3.eth.Contract(rewarderAbi, PLPAddresses.USDCRewarderAddress)
     let YUSDRewarder = new avax_web3.eth.Contract(rewarderAbi, PLPAddresses.YUSDRewarderAddress)
+    let YUSDAsset = new avax_web3.eth.Contract(PLPAssetAbi, PLPAddresses.YUSDAssetAddress)
+    let USDCAsset = new avax_web3.eth.Contract(PLPAssetAbi, PLPAddresses.USDCAssetAddress)
 
     // For converting to proper number of decimals. We use this to convert from raw numbers returned from web3 calls to human readable formatted numbers based on the decimals for each token.  
     const convert = (num, decimal) => {
@@ -98,6 +101,12 @@ const getPLPPoolData = async (web3s) => {
     /**
      * USDC rewards
      */
+
+    const USDCCash = Number(await USDCAsset.methods.cash().call())
+    const USDCLiability = Number(await USDCAsset.methods.liability().call())
+    const USDCRatio = USDCCash / USDCLiability
+
+
     const USDCPoolInfo = await MC.methods.poolInfo(PLPAddresses.USDCPID).call()
     const USDCLPTokenAddress = USDCPoolInfo[0]
     const USDCAdjustedAllocPoint = Number(USDCPoolInfo[7])
@@ -112,13 +121,13 @@ const getPLPPoolData = async (web3s) => {
 
     const USDCPoolPTPRewardValue = PTPPrice * (USDCAdjustedAllocPoint / totalAdjustedAllocPoint) * SECONDS_PER_YEAR * ptpPerSec
 
-    const USDCPTPBaseAPR = USDCPoolPTPRewardValue / USDCLPValue * dialutingRepartition / 1000
+    const USDCPTPBaseAPR = USDCPoolPTPRewardValue / USDCLPValue * dialutingRepartition / 1000 * USDCRatio
 
     const USDCRewarderTokenPerSec = Number(await USDCRewarder.methods.tokenPerSec().call()) / 10 ** 18
 
     const USDCYETIRewardValue = YETIPrice * USDCRewarderTokenPerSec * SECONDS_PER_YEAR
 
-    const USDCYETIAPR = USDCYETIRewardValue / USDCLPValue
+    const USDCYETIAPR = USDCYETIRewardValue / USDCLPValue * USDCRatio
 
     APRData.USDC.PTPBase.value = USDCPTPBaseAPR
     APRData.USDC.YETI.value = USDCYETIAPR
@@ -128,6 +137,11 @@ const getPLPPoolData = async (web3s) => {
     /**
      * YUSD rewards
      */
+
+    const YUSDCash = Number(await YUSDAsset.methods.cash().call())
+    const YUSDLiability = Number(await YUSDAsset.methods.liability().call())
+    const YUSDRatio = YUSDCash / YUSDLiability
+
     const YUSDPoolInfo = await MC.methods.poolInfo(PLPAddresses.YUSDPID).call()
     const YUSDLPTokenAddress = YUSDPoolInfo[0]
     const YUSDAdjustedAllocPoint = Number(YUSDPoolInfo[7])
@@ -142,13 +156,13 @@ const getPLPPoolData = async (web3s) => {
 
     const YUSDPoolPTPRewardValue = PTPPrice * (YUSDAdjustedAllocPoint / totalAdjustedAllocPoint) * SECONDS_PER_YEAR * ptpPerSec
 
-    const YUSDPTPBaseAPR = YUSDPoolPTPRewardValue / YUSDLPValue * dialutingRepartition / 1000
+    const YUSDPTPBaseAPR = YUSDPoolPTPRewardValue / YUSDLPValue * dialutingRepartition / 1000 * YUSDRatio
 
     const YUSDRewarderTokenPerSec = Number(await YUSDRewarder.methods.tokenPerSec().call()) / 10 ** 18
 
     const YUSDYETIRewardValue = YETIPrice * YUSDRewarderTokenPerSec * SECONDS_PER_YEAR
 
-    const YUSDYETIAPR = YUSDYETIRewardValue / YUSDLPValue
+    const YUSDYETIAPR = YUSDYETIRewardValue / YUSDLPValue * YUSDRatio
 
     APRData.YUSD.PTPBase.value = YUSDPTPBaseAPR
     APRData.YUSD.YETI.value = YUSDYETIAPR
