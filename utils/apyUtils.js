@@ -8,13 +8,18 @@ const convert = (num, decimal) => {
 async function calcPoolFeeAPY(apiUrl, feeRate, LPContractObject, LPPrice, base, target) {
     async function getVolume() {
         let response =  await fetch(apiUrl)
-        let data = await response.json()
-        for (var i = 0; i < data['tickers'].length; i++) {
-            const ticker = data['tickers'][i]
-            if (ticker['base'] == base && ticker['target'] == target) {
-                return data['tickers'][i]["converted_volume"]['usd']
+        try {
+            let data = await response.json()
+            for (var i = 0; i < data['tickers'].length; i++) {
+                const ticker = data['tickers'][i]
+                if (ticker['base'] == base && ticker['target'] == target) {
+                    return data['tickers'][i]["converted_volume"]['usd']
+                }
             }
+        } catch(err) {
+            console.log(err)
         }
+        
         return 0
     }
     
