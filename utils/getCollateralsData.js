@@ -14,6 +14,7 @@ const getaWAVAXAPY = require("./collaterals/getaWAVAXAPY")
 const getaWETHAPY = require("./collaterals/getaWETHAPY")
 const getaUSDTAPY = require("./collaterals/getaUSDTAPY")
 const getaDAIAPY = require("./collaterals/getaDAIAPY")
+const getJoeAPY = require("./collaterals/getJoeAPY")
 
 // Async function which takes in web3 collection, makes web3 calls to get current on chain data, formats data, and caches formatted data to MongoDB
 const getCollateralsData = async (web3s) => {
@@ -23,7 +24,7 @@ const getCollateralsData = async (web3s) => {
         USDC: {APY: {value: 0}},
         WETH: {APY: {value: 0}},
         WBTC: {APY: {value: 0}},
-        sJOE: {APY: {value: 1.427}},
+        sJOE: null,
         sAVAX: {APY: {value: 0.0576}},
         av3CRV: {APY: {value: 0.0169}},
         WETHWAVAXJLP: null,
@@ -58,6 +59,7 @@ const getCollateralsData = async (web3s) => {
     collateralsData.aDAI = await getaDAIAPY(web3s)
     collateralsData.aWETH = await getaWETHAPY(web3s)
     collateralsData.aUSDT = await getaUSDTAPY(web3s)
+    collateralsData.sJOE = await getJoeAPY(web3s)
     
     // Finally after all data has been collected and formatted, we set up our database object and call db.updateYETIData() in order to cache our data in our MongoDB database.
 
