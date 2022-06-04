@@ -67,6 +67,7 @@ const getCurvePoolData = async (web3s) => {
 
     try {
         const client = db.getClient()
+        
         db.updateCurvePoolData(Data, client)
     } catch (err) {
         console.log(err)
