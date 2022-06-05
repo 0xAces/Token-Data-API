@@ -28,7 +28,7 @@ updateYETIData = async (chainData, client) => {
         let deleteResult = await collection.deleteMany( { timestamp : {"$lt" : Date.now() - 60 * 1000 }}) 
         console.log(`Deleted: ${deleteResult.deletedCount}`)
         await collection.insertOne(newChainData)
-        console.log("Inserted new entries")
+        console.log("Inserted new YETI Data entries")
     } 
     catch(err) {
         console.log(err)
@@ -46,7 +46,7 @@ updateYUSDData = async (chainData, client) => {
         let deleteResult = await collection.deleteMany( { timestamp : {"$lt" : Date.now() - 60 * 1000 }}) 
         console.log(`Deleted: ${deleteResult.deletedCount}`)
         await collection.insertOne(newChainData)
-        console.log("Inserted new entries")
+        console.log("Inserted new YUSD Data entries")
     } 
     catch(err) {
         console.log(err)
@@ -63,7 +63,7 @@ updateFarmPoolData = async (chainData, client) => {
         let deleteResult = await collection.deleteMany( { timestamp : {"$lt" : Date.now() - 60 * 1000 }}) 
         console.log(`Deleted: ${deleteResult.deletedCount}`)
         await collection.insertOne(newChainData)
-        console.log("Inserted new entries")
+        console.log("Inserted new Farm Pool Data entries")
     } 
     catch(err) {
         console.log(err)
@@ -80,7 +80,7 @@ updateCollateralsData = async (chainData, client) => {
         let deleteResult = await collection.deleteMany( { timestamp : {"$lt" : Date.now() - 60 * 1000 }}) 
         console.log(`Deleted: ${deleteResult.deletedCount}`)
         await collection.insertOne(newChainData)
-        console.log("Inserted new entries")
+        console.log("Inserted new Collaterals Data entries")
     } 
     catch(err) {
         console.log(err)
@@ -97,7 +97,7 @@ updatePLPPoolData = async (chainData, client) => {
         let deleteResult = await collection.deleteMany( { timestamp : {"$lt" : Date.now() - 60 * 1000 }}) 
         console.log(`Deleted: ${deleteResult.deletedCount}`)
         await collection.insertOne(newChainData)
-        console.log("Inserted new entries")
+        console.log("Inserted new PLP Pool Data entries")
     } 
     catch(err) {
         console.log(err)
@@ -114,7 +114,7 @@ updateCurvePoolData = async (chainData, client) => {
         let deleteResult = await collection.deleteMany( { timestamp : {"$lt" : Date.now() - 60 * 1000 }}) 
         console.log(`Deleted: ${deleteResult.deletedCount}`)
         await collection.insertOne(newChainData)
-        console.log("Inserted new entries")
+        console.log("Inserted new Curve Pool entries")
     } 
     catch(err) {
         console.log(err)
@@ -131,7 +131,7 @@ updateBoostData = async (chainData, client) => {
         let deleteResult = await collection.deleteMany( { timestamp : {"$lt" : Date.now() - 60 * 1000 }}) 
         console.log(`Deleted: ${deleteResult.deletedCount}`)
         await collection.insertOne(newChainData)
-        console.log("Inserted new entries")
+        console.log("Inserted new Boost entries")
     } 
     catch(err) {
         console.log(err)
