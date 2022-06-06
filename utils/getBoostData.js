@@ -70,7 +70,7 @@ const getBoostData = async (web3s) => {
     })
 
 
-    median = 0
+
 
     for (let i in userList) {
 
@@ -91,24 +91,28 @@ const getBoostData = async (web3s) => {
 
             if (userBoostedAPR != 0) {
 
-            boostedAPRList.push(userBoostedAPR)
-
-            boostedAPRList.sort((n1,n2) => n1 - n2);
-
-            // testMap.set(userID, userBoostedAPR)
-
-
-            median = boostedAPRList[Math.floor(boostedAPRList.length / 2)]
+                boostedAPRList.push(userBoostedAPR)
+            
+            
             }
         }
            
     }
+    boostedAPRList.sort((n1,n2) => n1 - n2);
+
+    const median = boostedAPRList[Math.floor(boostedAPRList.length / 2)]
+
+    const max  = Math.max(...boostedAPRList)
 
     let Data = {
         boostFarm: {
             medianAPR: {
                 value: median,
                 description: "The median boosted APR of all YUSD Curve Farmers."
+            },
+            maxAPR: {
+                value: max,
+                description: "The max boosted APR of all YUSD Curve Farmers."
             }
         }
 
