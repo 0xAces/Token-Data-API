@@ -25,8 +25,8 @@ updateYETIData = async (chainData, client) => {
         chainData.timestamp = Date.now()
         let newChainData = Object.assign({}, chainData)
         newChainData._id = ObjectId()
-        let deleteResult = await collection.deleteMany( { timestamp : {"$lt" : Date.now() - 60 * 1000 }}) 
-        console.log(`Deleted: YETI Data ${deleteResult.deletedCount}`)
+        
+        // console.log(`Deleted: YETI Data ${deleteResult.deletedCount}`)
         await collection.insertOne(newChainData)
         console.log("Inserted new YETI Data entries")
     } 
@@ -43,8 +43,8 @@ updateYUSDData = async (chainData, client) => {
         chainData.timestamp = Date.now()
         let newChainData = Object.assign({}, chainData)
         newChainData._id = ObjectId()
-        let deleteResult = await collection.deleteMany( { timestamp : {"$lt" : Date.now() - 60 * 1000 }}) 
-        console.log(`Deleted: YUSD Data ${deleteResult.deletedCount}`)
+        
+        // console.log(`Deleted: YUSD Data ${deleteResult.deletedCount}`)
         await collection.insertOne(newChainData)
         console.log("Inserted new YUSD Data entries")
     } 
@@ -60,8 +60,8 @@ updateFarmPoolData = async (chainData, client) => {
         chainData.timestamp = Date.now()
         let newChainData = Object.assign({}, chainData)
         newChainData._id = ObjectId()
-        let deleteResult = await collection.deleteMany( { timestamp : {"$lt" : Date.now() - 60 * 1000 }}) 
-        console.log(`Deleted: Farm Pool Data ${deleteResult.deletedCount}`)
+        
+        // console.log(`Deleted: Farm Pool Data ${deleteResult.deletedCount}`)
         await collection.insertOne(newChainData)
         console.log("Inserted new Farm Pool Data entries")
     } 
@@ -77,8 +77,8 @@ updateCollateralsData = async (chainData, client) => {
         chainData.timestamp = Date.now()
         let newChainData = Object.assign({}, chainData)
         newChainData._id = ObjectId()
-        let deleteResult = await collection.deleteMany( { timestamp : {"$lt" : Date.now() - 60 * 1000 }}) 
-        console.log(`Deleted: Collaterals Data ${deleteResult.deletedCount}`)
+        
+        // console.log(`Deleted: Collaterals Data ${deleteResult.deletedCount}`)
         await collection.insertOne(newChainData)
         console.log("Inserted new Collaterals Data entries")
     } 
@@ -94,8 +94,8 @@ updatePLPPoolData = async (chainData, client) => {
         chainData.timestamp = Date.now()
         let newChainData = Object.assign({}, chainData)
         newChainData._id = ObjectId()
-        let deleteResult = await collection.deleteMany( { timestamp : {"$lt" : Date.now() - 60 * 1000 }}) 
-        console.log(`Deleted: PLP Pool Data ${deleteResult.deletedCount}`)
+        
+        // console.log(`Deleted: PLP Pool Data ${deleteResult.deletedCount}`)
         await collection.insertOne(newChainData)
         console.log("Inserted new PLP Pool Data entries")
     } 
@@ -111,8 +111,6 @@ updateCurvePoolData = async (chainData, client) => {
         chainData.timestamp = Date.now()
         let newChainData = Object.assign({}, chainData)
         newChainData._id = ObjectId()
-        let deleteResult = await collection.deleteMany( { timestamp : {"$lt" : Date.now() - 60 * 1000 }}) 
-        console.log(`Deleted: Curve Pool  ${deleteResult.deletedCount}`)
         await collection.insertOne(newChainData)
         console.log("Inserted new Curve Pool entries")
     } 
@@ -128,8 +126,8 @@ updateBoostData = async (chainData, client) => {
         chainData.timestamp = Date.now()
         let newChainData = Object.assign({}, chainData)
         newChainData._id = ObjectId()
-        let deleteResult = await collection.deleteMany( { timestamp : {"$lt" : Date.now() - 60 * 1000 }}) 
-        console.log(`Deleted: new Boost ${deleteResult.deletedCount}`)
+        
+        // console.log(`Deleted: new Boost ${deleteResult.deletedCount}`)
         await collection.insertOne(newChainData)
         console.log("Inserted new Boost entries")
     } 
