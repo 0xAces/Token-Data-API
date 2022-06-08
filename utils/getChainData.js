@@ -82,7 +82,7 @@ const setupWeb3 = async () => {
 
 const updateData = async (web3_collection) => {
 
-  schedule.scheduleJob("0,15,30,45,59 * * * * *", async () => {
+  schedule.scheduleJob("59 * * * * *", async () => {
 
     getYETIData(web3_collection)
 
