@@ -13,14 +13,16 @@ const CollateralsRoutes = require("./routes/Collaterals")
 const PLPPoolRoutes = require("./routes/PLPPool")
 const CurvePoolRoutes = require("./routes/CurvePool")
 const BoostRoutes = require("./routes/Boost")
+const VaultRoutes = require("./routes/Vault")
 const getChainData = require("./utils/getChainData")
+const sleep = require("ko-sleep");
 const removeTrailingSlash = require('./middleware/removeTrailingSlash');
 
 
 const PORT = process.env.PORT || 3001
 
 // Call getChainData here to begin chain data update loop and start caching new data to database
-getChainData() 
+getChainData.getChainData()
 
 const app = express()
 
@@ -155,6 +157,19 @@ app.use('/v1/Boost', async (req, res, next) => {
   next()
 })
 
+app.use('/v1/Vault/:blockNum', async (req, res, next) => {
+  const client = db.getClient()
+  const database = client.db('YetiFinance')
+  const collection = database.collection('Vault')
+  cachedData = await collection.find({ "blockNum" : req.params['blockNum']}).sort({ _id: -1 }).limit(1).toArray()
+  if (cachedData.length == 0) {
+    await getChainData.getPastData('Vault', req.params).then(result => req.chainData = result)
+  } else {
+    req.chainData = cachedData[0]
+  }
+  next()
+})
+
 app.use('/v1/YETI', YETIRoutes)
 app.use('/v1/YUSD', YUSDRoutes)
 app.use('/v1/FarmPool', FarmPoolRoutes)
@@ -162,6 +177,7 @@ app.use('/v1/Collaterals', CollateralsRoutes)
 app.use('/v1/PLPPool', PLPPoolRoutes)
 app.use('/v1/CurvePool', CurvePoolRoutes)
 app.use('/v1/Boost', BoostRoutes)
+app.use('/v1/Vault', VaultRoutes)
 
 app.use((req, res) => {
   res.status(404).json({error: true, message: "Resource not found"})

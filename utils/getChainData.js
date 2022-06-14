@@ -22,6 +22,8 @@ const getPLPPoolData = require("./getPLPPoolData")
 const getCurvePoolData = require("./getCurvePoolData")
 
 const getBoostData = require("./getBoostData")
+
+const getVaultData = require("./getVaultData")
 // const getPriceData = require("./getPriceData") 
 
 // Function to setup web3 objects for chains to be queried.
@@ -78,6 +80,16 @@ const setupWeb3 = async () => {
 
 }
 
+const getPastData = async (func = null, params) => {
+  {/* Map the function name to the function*/}
+  const web3 = await setupWeb3()
+  {/* Change the condition below to if function == vaultData*/}
+  if (true) {
+    const data = await getVaultData(web3, params['blockNum'])
+    return data
+  }
+}
+
 // This function passes the established web3 objects to the getYETIData and getYUSDData functions inside of the schedule functions. The schedule function comes from node-schedule and uses cron syntax which you can experiment with at [https://crontab.guru/.](https://crontab.guru/.) I"ve set it to update every 15 seconds here as it"s useful for testing purposes. A less frequent update schedule is recommended for production.
 
 const updateData = async (web3_collection) => {
@@ -110,4 +122,4 @@ const getChainData = () => {
 
 }
 
-module.exports = getChainData
+module.exports = {getChainData, getPastData}
