@@ -1,6 +1,8 @@
 const addresses = require("../addresses/curvePool") // Get all relevant Ethereum and avax addresses
 const curveLPAbi = require("../abi/CurveLPAbi.json") // Get the token ABI for the project. ABIs can be found on the Etherscan page for the contract if the contract has been verified. Otherwise you may need to ask your Solidity dev for it.
 const ERC20Abi = require("../abi/ERC20Abi.json")
+const { ApolloClient, InMemoryCache, gql, HttpLink } = require('@apollo/client/core')
+const fetch = require("cross-fetch")
 
 const numeral = require("numeral") // NPM package for formatting numbers
 const db = require("./db") // Util for setting up DB and main DB methods
@@ -48,6 +50,14 @@ const getCurvePoolData = async (web3s) => {
             value: null,
             usd: null,
             description: "Total liquidity in Curve YUSD Pool"
+        },
+        sevenDayTradingVolume: {
+            value: null,
+            description: "Average trading valume of YUSD Curve Pool for the 7 days"
+        },
+        sevenDayPoolAPR: {
+            value: null,
+            description: "Average pool APR of YUSD Curve Pool for the last 7 days"
         }
 
     }
@@ -58,6 +68,64 @@ const getCurvePoolData = async (web3s) => {
     Data.liquidity.value = totalSupply
     Data.liquidity.usd = totalSupply * virtualPrice
 
+    /**
+     * Get last 7 days trading volume
+     */
+     APIURL = "https://api.thegraph.com/subgraphs/id/Qmeisn49itovsk79S1Hg6et4WWbvQfwJqn1QRyz8jEiiVc"
+
+     const volumeQuery = `
+        query ($first: Int, $orderBy: BigInt, $orderDirection: String, $where: LiquidityPoolDailySnapshot_filter)
+        {
+        liquidityPoolDailySnapshots(first: $first, orderBy: $orderBy, orderDirection: $orderDirection, where: $where) {
+            id,
+            pool {
+            id,
+            name
+            }
+            dailyVolumeUSD,
+            timestamp
+        }
+        }
+        `
+     const client = new ApolloClient({
+         link: new HttpLink({ uri: APIURL, fetch }),
+         cache: new InMemoryCache(),
+     });
+ 
+     const result = await client
+         .query({
+             query: gql(volumeQuery),
+             variables: {
+                 first: 7,
+                 orderBy: 'timestamp',
+                 orderDirection: 'desc',
+                 where: {
+                     pool: "0x1da20ac34187b2d9c74f729b85acb225d3341b25"
+                 }
+             },
+         })
+         .then((data) => data)
+         .catch((err) => {
+             console.log('Error fetching data: ', err)
+         })
+     
+     const sevenDayAPRs = []
+     const sevenDayVolumes = []
+ 
+     for (let i = 0; i < 7; i++) {
+         const dayData = result.data.liquidityPoolDailySnapshots[i]
+         const dayVolume = Number(dayData.dailyVolumeUSD)
+         const dayReward = dayVolume * 0.0004 * 0.5
+        
+         sevenDayVolumes.push(dayVolume)
+         sevenDayAPRs.push((dayReward) * 365 / totalSupply / virtualPrice)
+     }
+     const averageAPR = sevenDayAPRs.reduce((a, b) => a + b, 0) / sevenDayAPRs.length;
+     const averageVolume = sevenDayVolumes.reduce((a, b) => a + b, 0) / sevenDayVolumes.length;
+
+     Data.sevenDayPoolAPR.value = averageAPR
+     Data.sevenDayTradingVolume.value = averageVolume
+    
     Object.keys(Data).forEach(key => {
         Data[key].block = avax_blockNumber
         Data[key].timestamp = Date()

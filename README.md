@@ -3,4 +3,4 @@
 
 `npm install`
 
-`node servers.js`
+`node server.js`
