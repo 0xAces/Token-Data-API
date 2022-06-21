@@ -7,8 +7,8 @@ app.get('/', (req, res) => {
   res.json(req.chainData)
 })
 
-app.get('/SortedTroves', (req, res) => {
-    res.json(req.chainData.SortedTroves.value)
+app.get('/SortedTrovesData', (req, res) => {
+    res.json(req.chainData.SortedTrovesData.value)
 })
 
 app.get('/SortedAICRs', (req, res) => {

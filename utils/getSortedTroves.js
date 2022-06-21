@@ -71,7 +71,7 @@ const getSortedTrovesData = async (web3s) => {
     // Make tokenData object. This object is used for storing formatted and calculated results from web3 calls from both Ethereum and avax web3 objects. It is divided into 3 sections for data on avax, Ethereum, and aggregate data from both chains in 'combined'.
 
     let Data = {
-        SortedTroves: {
+        SortedTrovesData: {
             vaule: troves,
             description: "SortedToves in the Yeti Finance System."
         },
