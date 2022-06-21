@@ -153,6 +153,23 @@ updateVaultData = async (chainData, client, blockNum) => {
     }
 }
 
+updateSortedTrovesData = async (chainData, client, blockNum) => {
+    try {
+        const database = client.db('YetiFinance')
+        const collection = database.collection('SortedTroves')
+        chainData.timestamp = Date.now()
+        let newChainData = Object.assign({}, chainData)
+        newChainData._id = ObjectId()
+        newChainData.blockNum = blockNum
+        await collection.insertOne(newChainData)
+        console.log("Inserted new SortedTroves entries")
+        return newChainData
+    }   
+    catch(err) {
+        console.log(err)
+    }
+}
+
 getCachedYETIData = async (client) => {
     try {
         const database = client.db('YetiFinance')
@@ -258,6 +275,19 @@ getCachedVaultData = async (client, blockNum) => {
     }
 }
 
+getCachedSortedTrovesData = async (client, blockNum) => {
+    try {
+        const database = client.db('YetiFinance')
+        const collection = database.collection('SortedTroves')
+        cachedData = await collection.find({ "blockNum" : blockNum}).sort({ _id: -1 }).limit(1).toArray()
+        cachedData = cachedData[0]
+        return cachedData    
+    } 
+    catch(err) {
+        console.log(err)
+    }
+}
+
 
 
 module.exports = {
@@ -277,6 +307,8 @@ module.exports = {
     updateBoostData,
     getCachedBoostData,
     updateVaultData,
-    getCachedVaultData
+    getCachedVaultData,
+    updateSortedTrovesData,
+    getCachedSortedTrovesData
 }
 

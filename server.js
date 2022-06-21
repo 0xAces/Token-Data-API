@@ -15,6 +15,7 @@ const CurvePoolRoutes = require("./routes/CurvePool")
 const BoostRoutes = require("./routes/Boost")
 const VaultRoutes = require("./routes/Vault")
 const getChainData = require("./utils/getChainData")
+const SortedTrovesRoutes = require("./routes/SortedTroves")
 const sleep = require("ko-sleep");
 const removeTrailingSlash = require('./middleware/removeTrailingSlash');
 
@@ -170,6 +171,19 @@ app.use('/v1/Vault/:blockNum', async (req, res, next) => {
   next()
 })
 
+app.use('/v1/SortedTroves', async (req, res, next) => {
+  
+  const client = db.getClient()
+  try {
+    await db.getCachedSortedTrovesData(client).then(result => req.chainData = result)
+  }
+  catch(err){
+    console.log("error getting data")
+    console.log(err)
+  }
+  next()
+})
+
 app.use('/v1/YETI', YETIRoutes)
 app.use('/v1/YUSD', YUSDRoutes)
 app.use('/v1/FarmPool', FarmPoolRoutes)
@@ -178,6 +192,7 @@ app.use('/v1/PLPPool', PLPPoolRoutes)
 app.use('/v1/CurvePool', CurvePoolRoutes)
 app.use('/v1/Boost', BoostRoutes)
 app.use('/v1/Vault', VaultRoutes)
+app.use('/v1/Sortedtroves', SortedTrovesRoutes)
 
 app.use((req, res) => {
   res.status(404).json({error: true, message: "Resource not found"})

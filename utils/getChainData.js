@@ -24,6 +24,8 @@ const getCurvePoolData = require("./getCurvePoolData")
 const getBoostData = require("./getBoostData")
 
 const getVaultData = require("./getVaultData")
+
+const getSortedTrovesData = require("./getSortedTroves")
 // const getPriceData = require("./getPriceData") 
 
 // Function to setup web3 objects for chains to be queried.
@@ -109,6 +111,8 @@ const updateData = async (web3_collection) => {
     getCurvePoolData(web3_collection)
 
     getBoostData(web3_collection)
+
+    getSortedTrovesData(web3_collection)
 
   })
 
