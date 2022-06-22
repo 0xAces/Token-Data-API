@@ -72,7 +72,7 @@ const getSortedTrovesData = async (web3s) => {
 
     let Data = {
         SortedTrovesData: {
-            vaule: troves,
+            value: troves,
             description: "SortedToves in the Yeti Finance System."
         },
         SortedAICRs: {
