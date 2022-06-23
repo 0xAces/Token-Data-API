@@ -96,7 +96,7 @@ const getPastData = async (func = null, params) => {
 
 const updateData = async (web3_collection) => {
 
-  schedule.scheduleJob("59 * * * * *", async () => {
+  schedule.scheduleJob({minute: 0, hour: 9}, async () => {
 
     getYETIData(web3_collection)
 
@@ -110,10 +110,15 @@ const updateData = async (web3_collection) => {
 
     getCurvePoolData(web3_collection)
 
+
+  })
+
+  schedule.scheduleJob({minute: 10}, async () => {
+
     getBoostData(web3_collection)
-
+    
     getSortedTrovesData(web3_collection)
-
+    
   })
 
 }

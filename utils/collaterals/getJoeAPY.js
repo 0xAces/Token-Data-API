@@ -76,11 +76,12 @@ const getJoeAPY = async (web3s) => {
 
     for (let i = 0; i < 7; i++) {
         const dayData = result.data.daySnapshots[i]
-        const USDCReward = Number(dayData.rewards[0].changeInReward) / 10 ** 6
-        const totalStaked = Number(dayData.totalStake) / 10 ** 18
-        const totalFee = Number(dayData.totalFee) / 10 ** 18
-
-        sevenDayAPRs.push((USDCReward) * 365 / (totalStaked * joePrice))
+        if (dayData.rewards[0].changeInReward && dayData.totalStake) {
+            const USDCReward = Number(dayData.rewards[0].changeInReward) / 10 ** 6
+            const totalStaked = Number(dayData.totalStake) / 10 ** 18
+            const totalFee = Number(dayData.totalFee) / 10 ** 18
+            sevenDayAPRs.push((USDCReward) * 365 / (totalStaked * joePrice))
+        }
     }
     const average = sevenDayAPRs.reduce((a, b) => a + b, 0) / sevenDayAPRs.length;
 
