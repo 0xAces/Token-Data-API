@@ -100,8 +100,6 @@ const updateData = async (web3_collection) => {
 
     getYETIData(web3_collection)
 
-    getYUSDData(web3_collection)
-
     getTJFarmPoolData(web3_collection)
 
     getCollateralsData(web3_collection)
@@ -113,12 +111,14 @@ const updateData = async (web3_collection) => {
 
   })
 
-  schedule.scheduleJob({minute: 10}, async () => {
+  schedule.scheduleJob("*/10,*,*,*,*", async () => {
+
+    getYUSDData(web3_collection)
 
     getBoostData(web3_collection)
     
     getSortedTrovesData(web3_collection)
-    
+
   })
 
 }
