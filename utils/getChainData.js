@@ -96,30 +96,32 @@ const getPastData = async (func = null, params) => {
 
 const updateData = async (web3_collection) => {
 
-  schedule.scheduleJob({minute: 0, hour: 9}, async () => {
+  getPLPPoolData(web3_collection)
 
-    getYETIData(web3_collection)
+  // schedule.scheduleJob({minute: 0, hour: 9}, async () => {
 
-    getTJFarmPoolData(web3_collection)
+  //   getYETIData(web3_collection)
 
-    getCollateralsData(web3_collection)
+  //   getTJFarmPoolData(web3_collection)
 
-    getPLPPoolData(web3_collection)
+  //   getCollateralsData(web3_collection)
 
-    getCurvePoolData(web3_collection)
+  //   getPLPPoolData(web3_collection)
+
+  //   getCurvePoolData(web3_collection)
 
 
-  })
+  // })
 
-  schedule.scheduleJob("*/10,*,*,*,*", async () => {
+  // schedule.scheduleJob("*/10,*,*,*,*", async () => {
 
-    getYUSDData(web3_collection)
+  //   getYUSDData(web3_collection)
 
-    getBoostData(web3_collection)
+  //   getBoostData(web3_collection)
     
-    getSortedTrovesData(web3_collection)
+  //   getSortedTrovesData(web3_collection)
 
-  })
+  // })
 
 }
 
