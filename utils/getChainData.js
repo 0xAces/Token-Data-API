@@ -96,6 +96,8 @@ const getPastData = async (func = null, params) => {
 
 const updateData = async (web3_collection) => {
 
+  // getPLPPoolData(web3_collection)
+
   schedule.scheduleJob({minute: 0, hour: 9}, async () => {
 
     getYETIData(web3_collection)
