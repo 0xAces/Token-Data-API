@@ -55,10 +55,6 @@ app.get('/:blockNum/price/av3CRV', (req, res) => {
     res.json(req.chainData.price.av3CRV)
 })
 
-app.get('/:blockNum/price/avUSDC', (req, res) => {
-    res.json(req.chainData.price.avUSDC)
-})
-
 app.get('/:blockNum/price/sJOE', (req, res) => {
     res.json(req.chainData.price.sJOE)
 })
@@ -148,10 +144,6 @@ app.get('/:blockNum/underlyingPerReceipt/AVAXUSDCJLP', (req, res) => {
 
 app.get('/:blockNum/underlyingPerReceipt/av3CRV', (req, res) => {
     res.json(req.chainData.underlyingPerReceipt.av3CRV)
-})
-
-app.get('/:blockNum/underlyingPerReceipt/avUSDC', (req, res) => {
-    res.json(req.chainData.underlyingPerReceipt.avUSDC)
 })
 
 app.get('/:blockNum/underlyingPerReceipt/sJOE', (req, res) => {

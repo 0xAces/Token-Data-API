@@ -23,7 +23,6 @@ const getVaultData = async (web3s, blockNum) => {
             WETHWAVAXJLP: null,
             AVAXUSDCJLP: null,
             av3CRV: null,
-            avUSDC: null,
             sJOE: null,
             sAVAX: null,
             aUSDC: null,
@@ -46,7 +45,6 @@ const getVaultData = async (web3s, blockNum) => {
             WETHWAVAXJLP: null,
             AVAXUSDCJLP: null,
             av3CRV: null,
-            avUSDC: null,
             sJOE: null,
             sAVAX: null,
             aUSDC: null,
@@ -69,7 +67,6 @@ const getVaultData = async (web3s, blockNum) => {
     vaultData.price.WETHWAVAXJLP = await getVaultPrice(web3s, vaultOracleAddresses.WETHWAVAXJLP, blockNum)
     vaultData.price.AVAXUSDCJLP = await getVaultPrice(web3s, vaultOracleAddresses.AVAXUSDCJLP, blockNum)
     vaultData.price.av3CRV = await getVaultPrice(web3s, vaultOracleAddresses.av3CRV, blockNum)
-    vaultData.price.avUSDC = await getVaultPrice(web3s, vaultOracleAddresses.avUSDC, blockNum)
     vaultData.price.sJOE = await getVaultPrice(web3s, vaultOracleAddresses.sJOE, blockNum)
     vaultData.price.sAVAX = await getVaultPrice(web3s, vaultOracleAddresses.sAVAX, blockNum)
     vaultData.price.aUSDC = await getVaultPrice(web3s, vaultOracleAddresses.aUSDC, blockNum)
@@ -91,7 +88,6 @@ const getVaultData = async (web3s, blockNum) => {
     vaultData.underlyingPerReceipt.WETHWAVAXJLP = await getUnderlyingPerReceipt(web3s, vaultProxyAddresses.WETHWAVAXJLP, blockNum)
     vaultData.underlyingPerReceipt.AVAXUSDCJLP = await getUnderlyingPerReceipt(web3s, vaultProxyAddresses.AVAXUSDCJLP, blockNum)
     vaultData.underlyingPerReceipt.av3CRV = await getUnderlyingPerReceipt(web3s, vaultProxyAddresses.av3CRV, blockNum)
-    vaultData.underlyingPerReceipt.avUSDC = await getUnderlyingPerReceipt(web3s, vaultProxyAddresses.avUSDC, blockNum)
     vaultData.underlyingPerReceipt.sJOE = await getUnderlyingPerReceipt(web3s, vaultProxyAddresses.sJOE, blockNum)
     vaultData.underlyingPerReceipt.sAVAX = await getUnderlyingPerReceipt(web3s, vaultProxyAddresses.sAVAX, blockNum)
     vaultData.underlyingPerReceipt.aUSDC = await getUnderlyingPerReceipt(web3s, vaultProxyAddresses.aUSDC, blockNum)
