@@ -170,6 +170,23 @@ updateSortedTrovesData = async (chainData, client, blockNum) => {
     }
 }
 
+updateYetiControllerData = async (chainData, client, blockNum) => {
+    try {
+        const database = client.db('YetiFinance')
+        const collection = database.collection('YetiController')
+        chainData.timestamp = Date.now()
+        let newChainData = Object.assign({}, chainData)
+        newChainData._id = ObjectId()
+        newChainData.blockNum = blockNum
+        await collection.insertOne(newChainData)
+        console.log("Inserted new YetiController entries")
+        return newChainData
+    }   
+    catch(err) {
+        console.log(err)
+    }
+}
+
 getCachedYETIData = async (client) => {
     try {
         const database = client.db('YetiFinance')
@@ -288,6 +305,19 @@ getCachedSortedTrovesData = async (client, blockNum) => {
     }
 }
 
+getCachedYetiControllerData = async (client, blockNum) => {
+    try {
+        const database = client.db('YetiFinance')
+        const collection = database.collection('YetiController')
+        cachedData = await collection.find({ "blockNum" : blockNum}).sort({ _id: -1 }).limit(1).toArray()
+        cachedData = cachedData[0]
+        return cachedData    
+    } 
+    catch(err) {
+        console.log(err)
+    }
+}
+
 
 
 module.exports = {
@@ -309,6 +339,8 @@ module.exports = {
     updateVaultData,
     getCachedVaultData,
     updateSortedTrovesData,
-    getCachedSortedTrovesData
+    getCachedSortedTrovesData,
+    updateYetiControllerData,
+    getCachedYetiControllerData
 }
 

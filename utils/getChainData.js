@@ -26,6 +26,8 @@ const getBoostData = require("./getBoostData")
 const getVaultData = require("./getVaultData")
 
 const getSortedTrovesData = require("./getSortedTroves")
+
+const getYetiControllerData = require("./getYetiControllerData")
 // const getPriceData = require("./getPriceData") 
 
 // Function to setup web3 objects for chains to be queried.
@@ -120,6 +122,12 @@ const updateData = async (web3_collection) => {
     getBoostData(web3_collection)
     
     getSortedTrovesData(web3_collection)
+
+  })
+
+  schedule.scheduleJob("30,59 * * * * *", async () => {
+
+    getYetiControllerData(web3_collection)
 
   })
 
