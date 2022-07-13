@@ -85,7 +85,7 @@ const getJoeAPY = async (web3s) => {
     }
     const average = sevenDayAPRs.reduce((a, b) => a + b, 0) / sevenDayAPRs.length;
 
-    APYData.APY = apyUtils.calcAutoCompound(average, 365) * (1 - .2)
+    APYData.APY.value = apyUtils.calcAutoCompound(average, 365) * (1 - .2)
 
     Object.keys(APYData).forEach(key => {
         APYData[key].block = avax_blockNumber
