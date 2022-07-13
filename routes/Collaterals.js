@@ -252,4 +252,15 @@ app.get('/aDAI/description', (req, res) => {
   res.json(req.chainData.aDAI.APY.description)
 })
 
+// sAVAX
+
+app.get('/sAVAX', (req, res) => {
+  res.json(req.chainData.sAVAX)
+})
+
+app.get('/sAVAX/APY', (req, res) => {
+res.json(req.chainData.sAVAX.APY.value)
+})
+
+
 module.exports = app

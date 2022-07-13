@@ -24,7 +24,6 @@ const getCollateralsData = async (web3s) => {
         USDC: {APY: {value: 0}},
         WETH: {APY: {value: 0}},
         WBTC: {APY: {value: 0}},
-        sJOE: null,
         sAVAX: {APY: {value: 0.0576}},
         av3CRV: {APY: {value: 0.0169}},
         WETHWAVAXJLP: null,
@@ -41,7 +40,8 @@ const getCollateralsData = async (web3s) => {
         aWETH: null,
         aUSDT: null,
         aDAI: null,
-        aUSDT: null
+        aUSDT: null,
+        sJOE: null,
     }
 
     collateralsData.WETHWAVAXJLP = await getWETHWAVAXAPY(web3s)
