@@ -286,4 +286,4 @@ tokenData.map(
 );
 
 
-module.exports = tokenDataMappingT
+module.exports = {tokenDataMappingT, tokenDataMappingA}
