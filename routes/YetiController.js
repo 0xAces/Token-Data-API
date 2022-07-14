@@ -7,6 +7,10 @@ app.get('/', (req, res) => {
   res.json(req.chainData)
 })
 
+app.get('/WhitelistedCollaterals', (req, res) => {
+  res.json(req.chainData.whitelistedCollaterals.value)
+})
+
 
 
 
