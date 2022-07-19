@@ -166,9 +166,7 @@ const updateData = async (web3_collection) => {
 
 const restart = async (err) => {
   console.log('handling error', err)
-  j1.cancel()
-  j2.cancel()
-  j3.cancel()
+  await schedule.gracefulShutdown()
   console.log('restarting getChainData')
   getChainData()
 }
