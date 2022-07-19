@@ -167,8 +167,7 @@ const restart = (err) => {
   j1.cancel()
   j2.cancel()
   j3.cancel()
-  console.log('restarting')
-  getChainData()
+
 }
 // Here we define a function to call the async setupWeb3 function and use the resolved promise "web3_collection" as input for updateData which begins the update loop
 

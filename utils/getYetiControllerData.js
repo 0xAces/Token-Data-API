@@ -1,3 +1,4 @@
+const priceFeedAbi = require("../abi/PriceFeedAbi.json") // Get the token ABI for the project. ABIs can be found on the Etherscan page for the contract if the contract has been verified. Otherwise you may need to ask your Solidity dev for it.
 const yetiVaultAbi = require("../abi/YetiVaultAbi.json")
 const yetiFinance_addresses = require("../addresses/YetiFinance").yetiFinance_addresses
 const yetiControllerAbi = require("../abi/yetiControllerAbi.json")
@@ -8,7 +9,6 @@ const { tokenDataMappingA } = require("../TokenData/index")
 
 const getYetiControllerData = async (web3s) => {
     // Unpack web3 objects for Ethereum and avax
-
     const {avax_web3} = web3s
 
     let avax_blockNumber
@@ -28,9 +28,9 @@ const getYetiControllerData = async (web3s) => {
 
     // web3.eth.Contract() creates a smart contract object using the ABI and address of the contract which allows you to call all the smart contract functions listed in the ABI. Since we are not supplying a private key to our web3 object, we can only use it for reading on chain data, not for anything requiring signing - which is all we need for this project.
     // Here we instantiate the Ethereum smart contract object
-
     let yetiController = new avax_web3.eth.Contract(yetiControllerAbi, yetiFinance_addresses.yetiController)
 
+    
     let data = {
         whitelistedCollaterals: {
             value: null,
@@ -110,7 +110,6 @@ const getYetiControllerData = async (web3s) => {
             let vault = new avax_web3.eth.Contract(yetiVaultAbi, address)
 
             underlyingPerReceptRatios[address] = await vault.methods.underlyingPerReceipt().call()
-
             receiptPerUnderlying[address] = await vault.methods.receiptPerUnderlying().call()
 
             underlyingPrices[address] = receiptPerUnderlying[address] * price / 10 ** (18 - underlyingDecimals[address])
