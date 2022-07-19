@@ -105,32 +105,56 @@ const updateData = async (web3_collection) => {
 
     j1 = schedule.scheduleJob({minute: 0, hour: 9}, async () => {
 
-    getYETIData(web3_collection)
+    getYETIData(web3_collection).catch((err) => {
+      console.log('yeti error')
+      restart(err)
+    })
 
-    getTJFarmPoolData(web3_collection)
+    getTJFarmPoolData(web3_collection).catch((err) => {
+      console.log('farmpool error')
+      restart(err)
+    })
 
-    getCollateralsData(web3_collection)
+    getCollateralsData(web3_collection).catch((err) => {
+      console.log('collaterals error')
+      restart(err)
+    })
 
-    getPLPPoolData(web3_collection)
+    getPLPPoolData(web3_collection).catch((err) => {
+      console.log('plp pool error')
+      restart(err)
+    })
 
-    getCurvePoolData(web3_collection)
+    getCurvePoolData(web3_collection).catch((err) => {
+      console.log('curve pool error')
+      restart(err)
+    })
 
 
   })
 
   j2 = schedule.scheduleJob("*/10,*,*,*,*", async () => {
 
-    getYUSDData(web3_collection)
+    getYUSDData(web3_collection).catch((err) => {
+      console.log('yusd error')
+      restart(err)
+    })
 
-    getBoostData(web3_collection)
+    getBoostData(web3_collection).catch((err) => {
+      console.log('boost error')
+      restart(err)
+    })
     
-    getSortedTrovesData(web3_collection)
+    getSortedTrovesData(web3_collection).catch((err) => {
+      console.log('sorted error')
+      restart(err)
+    })
 
   })
 
   j3 = schedule.scheduleJob("0,10,20,30,40,50,59 * * * * *", async () => {
-    console.log('controller')
     getYetiControllerData(web3_collection).catch((err) => {
+        console.log('controller error')
         restart(err)
       })
   })
