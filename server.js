@@ -23,7 +23,17 @@ const removeTrailingSlash = require('./middleware/removeTrailingSlash');
 const PORT = process.env.PORT || 3001
 
 // Call getChainData here to begin chain data update loop and start caching new data to database
-getChainData.getChainData()
+
+while (true) {
+  try {
+    getChainData.getChainData()
+  } catch(err) {
+    console.log('getChainData errored', err)
+    sleep(1000)
+  }
+}
+
+
 
 const app = express()
 
@@ -141,6 +151,26 @@ app.use('/v1/Collaterals', async (req, res, next) => {
   catch(err){
     console.log("error getting data")
     console.log(err)
+  }
+  next()
+})
+
+app.use('/v1/Collaterals/:token', async (req, res, next) => {
+  const client = db.getClient()
+  const ss = await client.connect().then(() => {return client.startSession();})
+  const database = client.db('YetiFinance')
+  const collection = database.collection('Collaterals')
+  let token = req.params['token']
+  let cachedData;
+  if (token == 'aUSDT') {
+    cachedData = await collection.find({}, {ss}).project({aUSDT : true, _id: false}).toArray()
+  }
+  if (cachedData.length == 0) {
+    console.log('no data')
+  } else {
+    let data = Object.assign({}, cachedData)
+    // console.log('data fetched', data)
+    req.chainData = cachedData
   }
   next()
 })

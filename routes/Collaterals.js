@@ -4,6 +4,12 @@ const app = express.Router()
  
 
 app.get('/', (req, res) => {
+  console.log('queried here')
+  res.json(req.chainData)
+})
+
+app.get('/:token', (req, res) => {
+  console.log('queried here!', req.chainData)
   res.json(req.chainData)
 })
 

@@ -129,8 +129,13 @@ const updateData = async (web3_collection) => {
 
 const getChainData = () => {
 
-  setupWeb3().then((web3_collection) => updateData(web3_collection))
-
+  try {
+    setupWeb3().then((web3_collection) => updateData(web3_collection))
+  } 
+  catch (err) {
+    console.log('getChainData failed', err)
+    getChainData()
+  }
 }
 
 module.exports = {getChainData, getPastData}
