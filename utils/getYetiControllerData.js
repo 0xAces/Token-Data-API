@@ -1,4 +1,3 @@
-const priceFeedAbi = require("../abi/PriceFeedAbi.json") // Get the token ABI for the project. ABIs can be found on the Etherscan page for the contract if the contract has been verified. Otherwise you may need to ask your Solidity dev for it.
 const yetiVaultAbi = require("../abi/YetiVaultAbi.json")
 const yetiFinance_addresses = require("../addresses/YetiFinance").yetiFinance_addresses
 const yetiControllerAbi = require("../abi/yetiControllerAbi.json")
