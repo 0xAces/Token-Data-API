@@ -49,7 +49,7 @@ const getYetiControllerData = async (web3s) => {
             description: "Mapping of vaultTokens to their underlying decimals."
         },
         underlyingPerReceptRatios: {
-            vaule: null,
+            value: null,
             description: "Mappng of vaultTokens to their underlyingPerReceptRatio."
         },
         receiptPerUnderlying: {
@@ -122,7 +122,7 @@ const getYetiControllerData = async (web3s) => {
         prices[address] = price
     }
 
-    data.underlyingPerReceptRatios.vaule = underlyingPerReceptRatios
+    data.underlyingPerReceptRatios.value = underlyingPerReceptRatios
     data.receiptPerUnderlying.value = receiptPerUnderlying
     data.prices.value = prices
     data.underlyingPrices.value = underlyingPrices
