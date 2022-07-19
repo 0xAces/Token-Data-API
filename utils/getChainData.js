@@ -56,7 +56,9 @@ const setupWeb3 = async () => {
 
     }
 
-    if (avax_web3.currentProvider) break
+    if (avax_web3.currentProvider) {
+      console.log('got avax web3 endpoints')
+      break}
 
   }
 
@@ -94,13 +96,14 @@ const getPastData = async (func = null, params) => {
   }
 }
 
+var j1, j2, j3
 // This function passes the established web3 objects to the getYETIData and getYUSDData functions inside of the schedule functions. The schedule function comes from node-schedule and uses cron syntax which you can experiment with at [https://crontab.guru/.](https://crontab.guru/.) I"ve set it to update every 15 seconds here as it"s useful for testing purposes. A less frequent update schedule is recommended for production.
 
 const updateData = async (web3_collection) => {
 
   // getPLPPoolData(web3_collection)
 
-  schedule.scheduleJob({minute: 0, hour: 9}, async () => {
+    j1 = schedule.scheduleJob({minute: 0, hour: 9}, async () => {
 
     getYETIData(web3_collection)
 
@@ -115,7 +118,7 @@ const updateData = async (web3_collection) => {
 
   })
 
-  schedule.scheduleJob("*/10,*,*,*,*", async () => {
+  j2 = schedule.scheduleJob("*/10,*,*,*,*", async () => {
 
     getYUSDData(web3_collection)
 
@@ -125,27 +128,27 @@ const updateData = async (web3_collection) => {
 
   })
 
-  schedule.scheduleJob("30,59 * * * * *", async () => {
-
-    getYetiControllerData(web3_collection)
-
+  j3 = schedule.scheduleJob("0,10,20,30,40,50,59 * * * * *", async () => {
+    console.log('controller')
+    getYetiControllerData(web3_collection).catch((err) => {
+        restart(err)
+      })
   })
+} 
 
+const restart = (err) => {
+  console.log('handling error', err)
+  j1.cancel()
+  j2.cancel()
+  j3.cancel()
+  console.log('restarting')
+  getChainData()
 }
-
 // Here we define a function to call the async setupWeb3 function and use the resolved promise "web3_collection" as input for updateData which begins the update loop
 
 const getChainData = () => {
-
-  setupWeb3().then((web3_collection) => {
-    try {
-      updateData(web3_collection)
-    }
-    catch (err) {
-      console.log('getChainData failed', err)
-      getChainData()
-    }
-  })
+  console.log('getting chain Data')
+  setupWeb3().then((web3_collection) => updateData(web3_collection))
 }
 
 module.exports = {getChainData, getPastData}
