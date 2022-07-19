@@ -25,15 +25,7 @@ const PORT = process.env.PORT || 3001
 
 // Call getChainData here to begin chain data update loop and start caching new data to database
 
-while (true) {
-  try {
-    getChainData.getChainData()
-  } catch(err) {
-    console.log('getChainData errored', err)
-    sleep(1000)
-  }
-}
-
+getChainData.getChainData()
 
 
 const app = express()
