@@ -36,9 +36,9 @@ const setupWeb3 = async () => {
 
   const avax_endpoints = [
 
-    // "https://api.avax.network/ext/bc/C/rpc"
+    "https://api.avax.network/ext/bc/C/rpc"
     // "https://avax.getblock.io/mainnet/ext/bc/C/rpc?api_key=2f19e7c6-92be-4180-ba10-34ba3476936d"
-    "https://avax-mainnet.gateway.pokt.network/v1/lb/62c5d1bc976624003a93890f"
+    // "https://avax-mainnet.gateway.pokt.network/v1/lb/62c5d1bc976624003a93890f"
 
   ]
 
@@ -60,7 +60,8 @@ const setupWeb3 = async () => {
 
     if (avax_web3.currentProvider) {
       console.log('got avax web3 endpoints')
-      break}
+      break
+    }
 
   }
 
@@ -154,20 +155,22 @@ const updateData = async (web3_collection) => {
 
   })
 
-  j3 = schedule.scheduleJob("0,10,20,30,40,50,59 * * * * *", async () => {
+  j3 = schedule.scheduleJob("30,59 * * * * *", async () => {
     getYetiControllerData(web3_collection).catch((err) => {
         console.log('controller error')
         restart(err)
       })
   })
+  
 } 
 
-const restart = (err) => {
+const restart = async (err) => {
   console.log('handling error', err)
   j1.cancel()
   j2.cancel()
   j3.cancel()
-
+  console.log('restarting getChainData')
+  getChainData()
 }
 // Here we define a function to call the async setupWeb3 function and use the resolved promise "web3_collection" as input for updateData which begins the update loop
 
