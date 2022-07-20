@@ -94,68 +94,70 @@ const getPastData = async (func = null, params) => {
   const web3 = await setupWeb3()
   {/* Change the condition below to if function == vaultData*/}
   if (true) {
-    const data = await getVaultData(web3, params['blockNum'])
+    const data = await getVaultData(web3, params['blockNum']).catch((err) => {
+      console.log('vault error', err)
+      // await restart(err)
+    })
     return data
   }
 }
 
-var j1, j2, j3
 // This function passes the established web3 objects to the getYETIData and getYUSDData functions inside of the schedule functions. The schedule function comes from node-schedule and uses cron syntax which you can experiment with at [https://crontab.guru/.](https://crontab.guru/.) I"ve set it to update every 15 seconds here as it"s useful for testing purposes. A less frequent update schedule is recommended for production.
 
 const updateData = async (web3_collection) => {
 
   // getPLPPoolData(web3_collection)
 
-    j1 = schedule.scheduleJob({minute: 0, hour: 9}, async () => {
+  schedule.scheduleJob({minute: 0, hour: 9}, async () => {
 
-    getYETIData(web3_collection).catch(async (err) => {
+    getYETIData(web3_collection).catch((err) => {
       console.log('yeti error', err)
       // await restart(err)
     })
 
-    getTJFarmPoolData(web3_collection).catch(async (err) => {
+    getTJFarmPoolData(web3_collection).catch((err) => {
       console.log('farmpool error', err)
       // await restart(err)
     })
 
-    getCollateralsData(web3_collection).catch(async (err) => {
+    getCollateralsData(web3_collection).catch((err) => {
       console.log('collaterals error', err)
       // await restart(err)
     })
 
-    getPLPPoolData(web3_collection).catch(async (err) => {
+    getPLPPoolData(web3_collection).catch((err) => {
       console.log('plp pool error', err)
       // await restart(err)
     })
 
-    getCurvePoolData(web3_collection).catch(async (err) => {
+    getCurvePoolData(web3_collection).catch((err) => {
       console.log('curve pool error', err)
       // await restart(err)
     })
     
   })
 
-  j2 = schedule.scheduleJob("*/10,*,*,*,*", async () => {
+  schedule.scheduleJob("*/10,*,*,*,*", async () => {
 
-    getYUSDData(web3_collection).catch(async (err) => {
+    getYUSDData(web3_collection).catch((err) => {
       console.log('yusd error', err)
       // await restart(err)
     })
 
-    getBoostData(web3_collection).catch(async (err) => {
+    getBoostData(web3_collection).catch((err) => {
       console.log('boost error', err)
       // await restart(err)
     })
     
-    getSortedTrovesData(web3_collection).catch(async (err) => {
+    getSortedTrovesData(web3_collection).catch((err) => {
       console.log('sorted error', err)
       // await restart(err)
     })
 
   })
 
-  j3 = schedule.scheduleJob("59 * * * * *", async () => {
-    getYetiControllerData(web3_collection).catch(async (err) => {
+  schedule.scheduleJob("59 * * * * *", async () => {
+    getYetiControllerData(web3_collection).catch((err) => {
         console.log('controller error', err)
         // await restart(err)
       })
