@@ -154,7 +154,7 @@ const updateData = async (web3_collection) => {
 
   })
 
-  j3 = schedule.scheduleJob("10,20,30,40,50,59 * * * * *", async () => {
+  j3 = schedule.scheduleJob("59 * * * * *", async () => {
     getYetiControllerData(web3_collection).catch(async (err) => {
         console.log('controller error', err)
         // await restart(err)
