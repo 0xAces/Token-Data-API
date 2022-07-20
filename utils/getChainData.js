@@ -37,9 +37,6 @@ const setupWeb3 = async () => {
   const avax_endpoints = [
 
     "https://api.avax.network/ext/bc/C/rpc"
-    // "https://avax.getblock.io/mainnet/ext/bc/C/rpc?api_key=2f19e7c6-92be-4180-ba10-34ba3476936d"
-    // "https://avax-mainnet.gateway.pokt.network/v1/lb/62c5d1bc976624003a93890f"
-
   ]
 
   let avax_web3
@@ -162,12 +159,6 @@ const updateData = async (web3_collection) => {
         // await restart(err)
       })
   })
-
-  const restart = async (err) => {
-    console.log('handling error', err)
-    await sleep(1000 * 10)
-    web3_collection = await setupWeb3()
-  }
 } 
 // Here we define a function to call the async setupWeb3 function and use the resolved promise "web3_collection" as input for updateData which begins the update loop
 
