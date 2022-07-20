@@ -9,6 +9,7 @@ const { tokenDataMappingA } = require("../TokenData/index")
 
 const getYetiControllerData = async (web3s) => {
     // Unpack web3 objects for Ethereum and avax
+    
     const {avax_web3} = web3s
 
     let avax_blockNumber
