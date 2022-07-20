@@ -109,28 +109,28 @@ const updateData = async (web3_collection) => {
     j1 = schedule.scheduleJob({minute: 0, hour: 9}, async () => {
 
     getYETIData(web3_collection).catch(async (err) => {
-      console.log('yeti error')
-      await restart(err)
+      console.log('yeti error', err)
+      // await restart(err)
     })
 
     getTJFarmPoolData(web3_collection).catch(async (err) => {
-      console.log('farmpool error')
-      await restart(err)
+      console.log('farmpool error', err)
+      // await restart(err)
     })
 
     getCollateralsData(web3_collection).catch(async (err) => {
-      console.log('collaterals error')
-      await restart(err)
+      console.log('collaterals error', err)
+      // await restart(err)
     })
 
     getPLPPoolData(web3_collection).catch(async (err) => {
-      console.log('plp pool error')
-      await restart(err)
+      console.log('plp pool error', err)
+      // await restart(err)
     })
 
     getCurvePoolData(web3_collection).catch(async (err) => {
-      console.log('curve pool error')
-      await restart(err)
+      console.log('curve pool error', err)
+      // await restart(err)
     })
     
   })
@@ -138,26 +138,26 @@ const updateData = async (web3_collection) => {
   j2 = schedule.scheduleJob("*/10,*,*,*,*", async () => {
 
     getYUSDData(web3_collection).catch(async (err) => {
-      console.log('yusd error')
-      await restart(err)
+      console.log('yusd error', err)
+      // await restart(err)
     })
 
     getBoostData(web3_collection).catch(async (err) => {
-      console.log('boost error')
-      await restart(err)
+      console.log('boost error', err)
+      // await restart(err)
     })
     
     getSortedTrovesData(web3_collection).catch(async (err) => {
-      console.log('sorted error')
-      await restart(err)
+      console.log('sorted error', err)
+      // await restart(err)
     })
 
   })
 
   j3 = schedule.scheduleJob("10,20,30,40,50,59 * * * * *", async () => {
     getYetiControllerData(web3_collection).catch(async (err) => {
-        console.log('controller error')
-        await restart(err)
+        console.log('controller error', err)
+        // await restart(err)
       })
   })
 
