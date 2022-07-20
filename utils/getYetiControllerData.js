@@ -1,11 +1,13 @@
 const priceFeedAbi = require("../abi/PriceFeedAbi.json") // Get the token ABI for the project. ABIs can be found on the Etherscan page for the contract if the contract has been verified. Otherwise you may need to ask your Solidity dev for it.
 const yetiVaultAbi = require("../abi/YetiVaultAbi.json")
+const yetiControllerMultiCallAbi = require("../abi/YetiControllerMultiCallAbi.json")
 const yetiFinance_addresses = require("../addresses/YetiFinance").yetiFinance_addresses
 const yetiControllerAbi = require("../abi/yetiControllerAbi.json")
 const numeral = require("numeral") // NPM package for formatting numbers
 const db = require("./db") // Util for setting up DB and main DB methods
 const { tokenDataMappingA } = require("../TokenData/index")
 
+const YETICONTROLLERMULTICALL = "0x7270ac6e739eb0b5f0d97a0121b9593a025e8d57"
 
 const getYetiControllerData = async (web3s) => {
     // Unpack web3 objects for Ethereum and avax
@@ -28,7 +30,9 @@ const getYetiControllerData = async (web3s) => {
 
     // web3.eth.Contract() creates a smart contract object using the ABI and address of the contract which allows you to call all the smart contract functions listed in the ABI. Since we are not supplying a private key to our web3 object, we can only use it for reading on chain data, not for anything requiring signing - which is all we need for this project.
     // Here we instantiate the Ethereum smart contract object
-    let yetiController = new avax_web3.eth.Contract(yetiControllerAbi, yetiFinance_addresses.yetiController)
+    // let yetiController = new avax_web3.eth.Contract(yetiControllerAbi, yetiFinance_addresses.yetiController)
+
+    let multiCall = new avax_web3.eth.Contract(yetiControllerMultiCallAbi, YETICONTROLLERMULTICALL)
 
     
     let data = {
@@ -52,7 +56,7 @@ const getYetiControllerData = async (web3s) => {
             value: null,
             description: "Mappng of vaultTokens to their underlyingPerReceptRatio."
         },
-        receiptPerUnderlying: {
+        receiptPerUnderlyingRatios: {
             value: null,
             description: "Mappng of vaultTokens to their receptPerUnderlyingRratio."
         },
@@ -66,66 +70,98 @@ const getYetiControllerData = async (web3s) => {
         }
     }
 
-    const whitelistedCollaterals = await yetiController.methods.getValidCollateral().call()
+    const yetiControllerData = await multiCall.methods.getYetiControllerData().call()
+
+    const whitelistedCollaterals = yetiControllerData[0]
+
     data.whitelistedCollaterals.value = whitelistedCollaterals
-
-
-    const vaultTokens = []
-
-    whitelistedCollaterals.forEach(address => {
-        if (tokenDataMappingA[address].isVault) {
-            vaultTokens.push(address)
-          }
-    })
-    data.vaultTokens.value = vaultTokens
-
-
-    const underlyingTokens = []
-
-    vaultTokens.forEach(address => {
-        underlyingTokens.push(tokenDataMappingA[address].underlying)
-    })
-    data.underlyingTokens.value = underlyingTokens
-
-
+    data.vaultTokens.value = yetiControllerData[1]
+    data.underlyingTokens.value = yetiControllerData[2]
+    
     const underlyingDecimals = {}
-
-    vaultTokens.forEach(address => {
-        underlyingDecimals[address] = tokenDataMappingA[address].underlyingDecimals
-    })
-    data.underlyingDecimals.value = underlyingDecimals
-
-
     const underlyingPerReceptRatios = {}
-    const receiptPerUnderlying = {}
+    const receiptPerUnderlyingRatios = {}
     const prices = {}
     const underlyingPrices = {}
 
-    for (let i = 0; i < whitelistedCollaterals.length; i++) {
+    whitelistedCollaterals.forEach((_, i) => {
         const address = whitelistedCollaterals[i]
 
-        const price = await yetiController.methods.getPrice(address).call()
+        underlyingDecimals[address] = yetiControllerData[3][i]
+        underlyingPerReceptRatios[address] = yetiControllerData[4][i]
+        receiptPerUnderlyingRatios[address] = yetiControllerData[5][i]
+        prices[address] = yetiControllerData[6][i]
+        underlyingPrices[address] = yetiControllerData[7][i]
+    })
 
-        if (vaultTokens.includes(address)) {
-            let vault = new avax_web3.eth.Contract(yetiVaultAbi, address)
-
-            underlyingPerReceptRatios[address] = await vault.methods.underlyingPerReceipt().call()
-            receiptPerUnderlying[address] = await vault.methods.receiptPerUnderlying().call()
-
-            underlyingPrices[address] = receiptPerUnderlying[address] * price / 10 ** (18 - underlyingDecimals[address])
-        } else {
-            underlyingPerReceptRatios[address] = 1 ** 18
-            receiptPerUnderlying[address] = 1 ** 18
-            underlyingPrices[address] = price
-        }
-
-        prices[address] = price
-    }
-
+    data.underlyingDecimals.value = underlyingDecimals
     data.underlyingPerReceptRatios.value = underlyingPerReceptRatios
-    data.receiptPerUnderlying.value = receiptPerUnderlying
+    data.receiptPerUnderlyingRatios.value = receiptPerUnderlyingRatios
     data.prices.value = prices
     data.underlyingPrices.value = underlyingPrices
+
+
+
+    // const whitelistedCollaterals = await yetiController.methods.getValidCollateral().call()
+    // data.whitelistedCollaterals.value = whitelistedCollaterals
+
+
+    // const vaultTokens = []
+
+    // whitelistedCollaterals.forEach(address => {
+    //     if (tokenDataMappingA[address].isVault) {
+    //         vaultTokens.push(address)
+    //       }
+    // })
+    // data.vaultTokens.value = vaultTokens
+
+
+    // const underlyingTokens = []
+
+    // vaultTokens.forEach(address => {
+    //     underlyingTokens.push(tokenDataMappingA[address].underlying)
+    // })
+    // data.underlyingTokens.value = underlyingTokens
+
+
+    // const underlyingDecimals = {}
+
+    // vaultTokens.forEach(address => {
+    //     underlyingDecimals[address] = tokenDataMappingA[address].underlyingDecimals
+    // })
+    // data.underlyingDecimals.value = underlyingDecimals
+
+
+    // const underlyingPerReceptRatios = {}
+    // const receiptPerUnderlying = {}
+    // const prices = {}
+    // const underlyingPrices = {}
+
+    // for (let i = 0; i < whitelistedCollaterals.length; i++) {
+    //     const address = whitelistedCollaterals[i]
+
+    //     const price = await yetiController.methods.getPrice(address).call()
+
+    //     if (vaultTokens.includes(address)) {
+    //         let vault = new avax_web3.eth.Contract(yetiVaultAbi, address)
+
+    //         underlyingPerReceptRatios[address] = await vault.methods.underlyingPerReceipt().call()
+    //         receiptPerUnderlying[address] = await vault.methods.receiptPerUnderlying().call()
+
+    //         underlyingPrices[address] = receiptPerUnderlying[address] * price / 10 ** (18 - underlyingDecimals[address])
+    //     } else {
+    //         underlyingPerReceptRatios[address] = 1 ** 18
+    //         receiptPerUnderlying[address] = 1 ** 18
+    //         underlyingPrices[address] = price
+    //     }
+
+    //     prices[address] = price
+    // }
+
+    // data.underlyingPerReceptRatios.value = underlyingPerReceptRatios
+    // data.receiptPerUnderlying.value = receiptPerUnderlying
+    // data.prices.value = prices
+    // data.underlyingPrices.value = underlyingPrices
     
 
 
