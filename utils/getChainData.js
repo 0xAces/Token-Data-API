@@ -107,63 +107,80 @@ const updateData = async (web3_collection) => {
 
   schedule.scheduleJob({minute: 0, hour: 9}, async () => {
 
-    getYETIData(web3_collection).catch((err) => {
+    try {
+      getYETIData(web3_collection)
+    }
+    catch (err) {
       console.log('yeti error', err)
-      // await restart(err)
-    })
+    }
 
-    getTJFarmPoolData(web3_collection).catch((err) => {
-      console.log('farmpool error', err)
-      // await restart(err)
-    })
+    try {
+      getTJFarmPoolData(web3_collection)
+    }
+    catch (err) {
+      console.log('farm pool error', err)
+    }
 
-    getCollateralsData(web3_collection).catch((err) => {
+    try {
+      getCollateralsData(web3_collection)
+    }
+    catch (err) {
       console.log('collaterals error', err)
-      // await restart(err)
-    })
+    }
 
-    getPLPPoolData(web3_collection).catch((err) => {
+    try {
+      getPLPPoolData(web3_collection)
+    }
+    catch (err) {
       console.log('plp pool error', err)
-      // await restart(err)
-    })
+    }
 
-    getCurvePoolData(web3_collection).catch((err) => {
+    try {
+      getCurvePoolData(web3_collection)
+    }
+    catch (err) {
       console.log('curve pool error', err)
-      // await restart(err)
-    })
-    
+    }
   })
 
   schedule.scheduleJob("*/10,*,*,*,*", async () => {
 
-    getYUSDData(web3_collection).catch((err) => {
+    try {
+      getYUSDData(web3_collection)
+    }
+    catch (err) {
       console.log('yusd error', err)
-      // await restart(err)
-    })
+    }
 
-    getBoostData(web3_collection).catch((err) => {
+
+    try {
+      getBoostData(web3_collection)
+    }
+    catch (err) {
       console.log('boost error', err)
-      // await restart(err)
-    })
+    }
     
-    getSortedTrovesData(web3_collection).catch((err) => {
+    try {
+      getSortedTrovesData(web3_collection)
+    }
+    catch (err) {
       console.log('sorted error', err)
-      // await restart(err)
-    })
+    }
 
   })
 
   schedule.scheduleJob("59 * * * * *", async () => {
-    getYetiControllerData(web3_collection).catch((err) => {
-        console.log('controller error', err)
-        // await restart(err)
-      })
+    try {
+      getYetiControllerData(web3_collection)
+    }
+    catch (err) {
+      console.log('controller error', err)
+    }
   })
 } 
 // Here we define a function to call the async setupWeb3 function and use the resolved promise "web3_collection" as input for updateData which begins the update loop
 
 const getChainData = () => {
-  console.log('getting chain Data')
   setupWeb3().then((web3_collection) => updateData(web3_collection))
 }
 
