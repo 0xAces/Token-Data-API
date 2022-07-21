@@ -16,7 +16,6 @@ const BoostRoutes = require("./routes/Boost")
 const VaultRoutes = require("./routes/Vault")
 const getChainData = require("./utils/getChainData")
 const SortedTrovesRoutes = require("./routes/SortedTroves")
-const YetiControllerRoutes = require("./routes/YetiController")
 const sleep = require("ko-sleep");
 const removeTrailingSlash = require('./middleware/removeTrailingSlash');
 
@@ -24,9 +23,7 @@ const removeTrailingSlash = require('./middleware/removeTrailingSlash');
 const PORT = process.env.PORT || 3001
 
 // Call getChainData here to begin chain data update loop and start caching new data to database
-
 getChainData.getChainData()
-
 
 const app = express()
 
@@ -207,19 +204,6 @@ app.use('/v1/SortedTroves', async (req, res, next) => {
   next()
 })
 
-app.use('/v1/YetiController', async (req, res, next) => {
-  
-  const client = db.getClient()
-  try {
-    await db.getCachedYetiControllerData(client).then(result => req.chainData = result)
-  }
-  catch(err){
-    console.log("error getting data")
-    console.log(err)
-  }
-  next()
-})
-
 app.use('/v1/YETI', YETIRoutes)
 app.use('/v1/YUSD', YUSDRoutes)
 app.use('/v1/FarmPool', FarmPoolRoutes)
@@ -229,7 +213,6 @@ app.use('/v1/CurvePool', CurvePoolRoutes)
 app.use('/v1/Boost', BoostRoutes)
 app.use('/v1/Vault', VaultRoutes)
 app.use('/v1/Sortedtroves', SortedTrovesRoutes)
-app.use('/v1/YetiController', YetiControllerRoutes)
 
 app.use((req, res) => {
   res.status(404).json({error: true, message: "Resource not found"})
