@@ -9,9 +9,8 @@ const getYetiControllerData = async (web3s) => {
     // Unpack web3 objects for Ethereum and avax
     const {avax_web3} = web3s
 
-    throw Error("error!")
-
     let avax_blockNumber
+    
     try {
         avax_blockNumber = await avax_web3.eth.getBlockNumber() 
     }
