@@ -37,6 +37,7 @@ const setupWeb3 = async () => {
   const avax_endpoints = [
 
     "https://api.avax.network/ext/bc/C/rpc"
+    // "https://avax-mainnet.gateway.pokt.network/v1/lb/62c5d1bc976624003a93890f"
   ]
 
   let avax_web3
@@ -148,25 +149,16 @@ const updateData = async (web3_collection) => {
       // await restart(err)
     })
 
-    getBoostData(web3_collection).catch((err) => {
-      console.log('boost error', err)
-      setupWeb3().then((new_web3_collection) => {web3_collection = new_web3_collection})
-      // await restart(err)
-    })
-    
-    getSortedTrovesData(web3_collection).catch((err) => {
-      console.log('sorted error', err)
-      setupWeb3().then((new_web3_collection) => {web3_collection = new_web3_collection})
-      // await restart(err)
-    })
+    getBoostData(web3_collection)
 
   })
 
-  schedule.scheduleJob("30,59 * * * * *", async () => {
-    getYetiControllerData(web3_collection).catch((err) => {
-        console.log('controller error', err)
-        setupWeb3().then((new_web3_collection) => {web3_collection = new_web3_collection})
-      })
+  schedule.scheduleJob("15,30,45,59 * * * * *", async () => {
+
+    getSortedTrovesData(web3_collection)
+
+    getYetiControllerData(web3_collection)
+
   })
 } 
 // Here we define a function to call the async setupWeb3 function and use the resolved promise "web3_collection" as input for updateData which begins the update loop
