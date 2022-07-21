@@ -1,6 +1,7 @@
 const yetiFinance_address = require("../addresses/YetiFinance").yetiFinance_addresses
 const sortedTrovesAbi = require("../abi/SortedTrovesAbi.json") // Get the token ABI for the project. ABIs can be found on the Etherscan page for the contract if the contract has been verified. Otherwise you may need to ask your Solidity dev for it.
 const troveManagerAbi = require("../abi/TroveManagerAbi.json")
+const multiTroveGetterAbi = require("../abi/MultiTroveGetterAbi.json")
 
 const numeral = require("numeral") // NPM package for formatting numbers
 const db = require("./db") // Util for setting up DB and main DB methods
@@ -32,13 +33,11 @@ const getSortedTrovesData = async (web3s) => {
 
     // web3.eth.Contract() creates a smart contract object using the ABI and address of the contract which allows you to call all the smart contract functions listed in the ABI. Since we are not supplying a private key to our web3 object, we can only use it for reading on chain data, not for anything requiring signing - which is all we need for this project.
     // Here we instantiate the Ethereum smart contract object
-    let sortedTroves = new avax_web3.eth.Contract(sortedTrovesAbi, yetiFinance_address.sortedTroves)
-    let troveManager = new avax_web3.eth.Contract(troveManagerAbi, yetiFinance_address.troveManager)
+    let multiTroveGetter = new avax_web3.eth.Contract(multiTroveGetterAbi, "0xe7d37765C73Cc330fD027A9C4686b25311a21745")
 
-    const numTroves = Number(await sortedTroves.methods.getSize().call())
+    const allTroves = await multiTroveGetter.methods.getAllTroves().call()
 
-    let tail = await sortedTroves.methods.getLast().call()
-    let idx = 1
+    const numTroves = allTroves.length
 
     const troves = []
     const sortedAICRs = []
@@ -46,10 +45,14 @@ const getSortedTrovesData = async (web3s) => {
     // sum up debt up to the index. ie index sumDebt[1] = sumbdebt[0] + troves[1].outstandingDebt
     const sumDebt = []
 
-    while (tail !== "0x0000000000000000000000000000000000000000" && idx <= numTroves) {
-        const tail_icr = Number(await troveManager.methods.getCurrentICR(tail).call()) / 10 ** 18
-        const tail_aicr = Number(await troveManager.methods.getCurrentAICR(tail).call()) / 10 ** 18
-        const tail_outstandingDebt = Number(await troveManager.methods.getTroveDebt(tail).call()) / 10 ** 18 - 200
+    for (let idx = 0; idx < numTroves; idx++) {
+        const tail = allTroves[idx][1]
+
+        const tail_icr = Number(allTroves[idx][2]) / 10 ** 18
+
+        const tail_aicr = Number(allTroves[idx][3]) / 10 ** 18
+
+        const tail_outstandingDebt = Number(allTroves[idx][4]) / 10 ** 18 - 200
 
         troves.push({
             idx: idx,
@@ -63,8 +66,6 @@ const getSortedTrovesData = async (web3s) => {
 
         sumDebt.push(sumDebt.length === 0 ? tail_outstandingDebt : sumDebt[sumDebt.length - 1] + tail_outstandingDebt)
 
-        idx += 1
-        tail = await sortedTroves.methods.getPrev(tail).call()
     }
 
 

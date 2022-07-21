@@ -120,12 +120,12 @@ const updateData = async (web3_collection) => {
     getYUSDData(web3_collection)
 
     getBoostData(web3_collection)
-    
-    getSortedTrovesData(web3_collection)
 
   })
 
   schedule.scheduleJob("15,30,45,59 * * * * *", async () => {
+
+    getSortedTrovesData(web3_collection)
 
     getYetiControllerData(web3_collection)
 
