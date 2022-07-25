@@ -20,7 +20,7 @@ const sleep = require("ko-sleep");
 const removeTrailingSlash = require('./middleware/removeTrailingSlash');
 
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 3002
 
 // Call getChainData here to begin chain data update loop and start caching new data to database
 getChainData.getChainData()
@@ -145,17 +145,38 @@ app.use('/v1/Collaterals', async (req, res, next) => {
   next()
 })
 
-app.use('/v1/Collaterals/:token', async (req, res, next) => {
+app.use('/v1/Collaterals/history/:token', async (req, res, next) => {
   const client = db.getClient()
   const ss = await client.connect().then(() => {return client.startSession();})
   const database = client.db('YetiFinance')
   const collection = database.collection('Collaterals')
   let token = req.params['token']
-  let cachedData;
-  if (token == 'aUSDT') {
-    cachedData = await collection.find({}, {ss}).project({aUSDT : true, _id: false}).toArray()
+  if (token == 'WETH-WAVAX JLP') {
+    token = 'WETHWAVAXJLP'
+  } else if (token == 'AVAX-USDC JLP') {
+    token = 'AVAXUSDCJLP'
   }
-  if (cachedData.length == 0) {
+  console.log('params', token)
+  let cachedData = null;
+  let project = {}
+  project[token] = {$ifNull: [`$${token}`, "null"]}
+  let match = {}
+  match[`${token}.APY.timestamp`]={ $exists: true, $ne: null}
+  console.log('match', match)
+
+  console.log('project', project)
+  cachedData = await collection.aggregate([
+    {$match: match},
+    {$project: project},
+    { "$group": {
+        "_id": {$dateFromString: {dateString: {$substr: [`$${token}.APY.timestamp`, 0, 15]}}},
+        "average": { "$avg": `$${token}.APY.value` }
+    } }
+  ]).sort({_id: 1}).toArray()
+
+  // cachedData = await collection.find({}, ss).project({sJOE: true}).sort({_id: 1}).limit(10).toArray()
+  
+  if (!cachedData) {
     console.log('no data')
   } else {
     let data = Object.assign({}, cachedData)

@@ -8,7 +8,7 @@ app.get('/', (req, res) => {
   res.json(req.chainData)
 })
 
-app.get('/:token', (req, res) => {
+app.get('/history/:token', (req, res) => {
   console.log('queried here!', req.chainData)
   res.json(req.chainData)
 })

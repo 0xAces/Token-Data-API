@@ -153,13 +153,19 @@ const updateData = async (web3_collection) => {
 
   })
 
-  schedule.scheduleJob("15,30,45,59 * * * * *", async () => {
+  j1 = schedule.scheduleJob("15,30,45,59 * * * * *", async () => {
 
-    getSortedTrovesData(web3_collection)
+    getSortedTrovesData(web3_collection).catch((err) => {
+      console.log('sorted error', err)
+    })
 
-    getYetiControllerData(web3_collection)
+    getYetiControllerData(web3_collection).catch((err) => {
+      console.log('controller error', err)
+      setupWeb3().then((new_web3_collection) => {web3_collection = new_web3_collection})
+    })
 
   })
+  j1.cancel()
 } 
 // Here we define a function to call the async setupWeb3 function and use the resolved promise "web3_collection" as input for updateData which begins the update loop
 

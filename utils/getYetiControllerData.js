@@ -5,15 +5,16 @@ const yetiFinance_addresses = require("../addresses/YetiFinance").yetiFinance_ad
 const yetiControllerAbi = require("../abi/yetiControllerAbi.json")
 const numeral = require("numeral") // NPM package for formatting numbers
 const db = require("./db") // Util for setting up DB and main DB methods
+const { tokenDataMappingA } = require("../TokenData/index")
 
 const YETICONTROLLERMULTICALL = "0x7270ac6e739eb0b5f0d97a0121b9593a025e8d57"
+
 
 const getYetiControllerData = async (web3s) => {
     // Unpack web3 objects for Ethereum and avax
     const {avax_web3} = web3s
 
     let avax_blockNumber
-    
     try {
         avax_blockNumber = await avax_web3.eth.getBlockNumber() 
     }
@@ -44,7 +45,7 @@ const getYetiControllerData = async (web3s) => {
             value: null,
             description: "List of Collaterals that are vaults in whitelistedCollaterals."
         },
-        underlyingtokens: {
+        underlyingTokens: {
             value: null,
             description: "List of underlying for all vaultToknes."
         },
@@ -169,6 +170,7 @@ const getYetiControllerData = async (web3s) => {
         data[key].avax_block = avax_blockNumber
         data[key].timestamp = Date()
     })
+    
 
     // Finally after all data has been collected and formatted, we set up our database object and call db.updateYETIData() in order to cache our data in our MongoDB database.
 
