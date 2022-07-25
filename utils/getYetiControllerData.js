@@ -7,7 +7,7 @@ const numeral = require("numeral") // NPM package for formatting numbers
 const db = require("./db") // Util for setting up DB and main DB methods
 const { tokenDataMappingA } = require("../TokenData/index")
 
-const YETICONTROLLERMULTICALL = "0x7270ac6e739eb0b5f0d97a0121b9593a025e8d57"
+const YETICONTROLLERMULTICALL = "0xED12214FDe242a853A4b99B530Bc57317a037926"
 
 
 const getYetiControllerData = async (web3s) => {
