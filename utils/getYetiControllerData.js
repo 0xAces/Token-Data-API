@@ -71,116 +71,121 @@ const getYetiControllerData = async (web3s) => {
         }
     }
 
-    const yetiControllerData = await multiCall.methods.getYetiControllerData().call()
-
-    const whitelistedCollaterals = yetiControllerData[0]
-
-    data.whitelistedCollaterals.value = whitelistedCollaterals
-    data.vaultTokens.value = yetiControllerData[1]
-    data.underlyingTokens.value = yetiControllerData[2]
-    
-    const underlyingDecimals = {}
-    const underlyingPerReceptRatios = {}
-    const receiptPerUnderlyingRatios = {}
-    const prices = {}
-    const underlyingPrices = {}
-
-    whitelistedCollaterals.forEach((_, i) => {
-        const address = whitelistedCollaterals[i]
-
-        underlyingDecimals[address] = yetiControllerData[3][i]
-        underlyingPerReceptRatios[address] = yetiControllerData[4][i]
-        receiptPerUnderlyingRatios[address] = yetiControllerData[5][i]
-        prices[address] = yetiControllerData[6][i]
-        underlyingPrices[address] = yetiControllerData[7][i]
-    })
-
-    data.underlyingDecimals.value = underlyingDecimals
-    data.underlyingPerReceptRatios.value = underlyingPerReceptRatios
-    data.receiptPerUnderlyingRatios.value = receiptPerUnderlyingRatios
-    data.prices.value = prices
-    data.underlyingPrices.value = underlyingPrices
-
-
-
-    // const whitelistedCollaterals = await yetiController.methods.getValidCollateral().call()
-    // data.whitelistedCollaterals.value = whitelistedCollaterals
-
-
-    // const vaultTokens = []
-
-    // whitelistedCollaterals.forEach(address => {
-    //     if (tokenDataMappingA[address].isVault) {
-    //         vaultTokens.push(address)
-    //       }
-    // })
-    // data.vaultTokens.value = vaultTokens
-
-
-    // const underlyingTokens = []
-
-    // vaultTokens.forEach(address => {
-    //     underlyingTokens.push(tokenDataMappingA[address].underlying)
-    // })
-    // data.underlyingTokens.value = underlyingTokens
-
-
-    // const underlyingDecimals = {}
-
-    // vaultTokens.forEach(address => {
-    //     underlyingDecimals[address] = tokenDataMappingA[address].underlyingDecimals
-    // })
-    // data.underlyingDecimals.value = underlyingDecimals
-
-
-    // const underlyingPerReceptRatios = {}
-    // const receiptPerUnderlying = {}
-    // const prices = {}
-    // const underlyingPrices = {}
-
-    // for (let i = 0; i < whitelistedCollaterals.length; i++) {
-    //     const address = whitelistedCollaterals[i]
-
-    //     const price = await yetiController.methods.getPrice(address).call()
-
-    //     if (vaultTokens.includes(address)) {
-    //         let vault = new avax_web3.eth.Contract(yetiVaultAbi, address)
-
-    //         underlyingPerReceptRatios[address] = await vault.methods.underlyingPerReceipt().call()
-    //         receiptPerUnderlying[address] = await vault.methods.receiptPerUnderlying().call()
-
-    //         underlyingPrices[address] = receiptPerUnderlying[address] * price / 10 ** (18 - underlyingDecimals[address])
-    //     } else {
-    //         underlyingPerReceptRatios[address] = 1 ** 18
-    //         receiptPerUnderlying[address] = 1 ** 18
-    //         underlyingPrices[address] = price
-    //     }
-
-    //     prices[address] = price
-    // }
-
-    // data.underlyingPerReceptRatios.value = underlyingPerReceptRatios
-    // data.receiptPerUnderlying.value = receiptPerUnderlying
-    // data.prices.value = prices
-    // data.underlyingPrices.value = underlyingPrices
-    
-
-
-    Object.keys(data).forEach(key => {
-        data[key].avax_block = avax_blockNumber
-        data[key].timestamp = Date()
-    })
-    
-
-    // Finally after all data has been collected and formatted, we set up our database object and call db.updateYETIData() in order to cache our data in our MongoDB database.
-
     try {
-      const client = db.getClient()
-      db.updateYetiControllerData(data, client) 
+        const yetiControllerData = await multiCall.methods.getYetiControllerData().call()
+
+        const whitelistedCollaterals = yetiControllerData[0]
+
+        data.whitelistedCollaterals.value = whitelistedCollaterals
+        data.vaultTokens.value = yetiControllerData[1]
+        data.underlyingTokens.value = yetiControllerData[2]
+        
+        const underlyingDecimals = {}
+        const underlyingPerReceptRatios = {}
+        const receiptPerUnderlyingRatios = {}
+        const prices = {}
+        const underlyingPrices = {}
+
+        whitelistedCollaterals.forEach((_, i) => {
+            const address = whitelistedCollaterals[i]
+
+            underlyingDecimals[address] = yetiControllerData[3][i]
+            underlyingPerReceptRatios[address] = yetiControllerData[4][i]
+            receiptPerUnderlyingRatios[address] = yetiControllerData[5][i]
+            prices[address] = yetiControllerData[6][i]
+            underlyingPrices[address] = yetiControllerData[7][i]
+        })
+
+        data.underlyingDecimals.value = underlyingDecimals
+        data.underlyingPerReceptRatios.value = underlyingPerReceptRatios
+        data.receiptPerUnderlyingRatios.value = receiptPerUnderlyingRatios
+        data.prices.value = prices
+        data.underlyingPrices.value = underlyingPrices
+
+
+
+        // const whitelistedCollaterals = await yetiController.methods.getValidCollateral().call()
+        // data.whitelistedCollaterals.value = whitelistedCollaterals
+
+
+        // const vaultTokens = []
+
+        // whitelistedCollaterals.forEach(address => {
+        //     if (tokenDataMappingA[address].isVault) {
+        //         vaultTokens.push(address)
+        //       }
+        // })
+        // data.vaultTokens.value = vaultTokens
+
+
+        // const underlyingTokens = []
+
+        // vaultTokens.forEach(address => {
+        //     underlyingTokens.push(tokenDataMappingA[address].underlying)
+        // })
+        // data.underlyingTokens.value = underlyingTokens
+
+
+        // const underlyingDecimals = {}
+
+        // vaultTokens.forEach(address => {
+        //     underlyingDecimals[address] = tokenDataMappingA[address].underlyingDecimals
+        // })
+        // data.underlyingDecimals.value = underlyingDecimals
+
+
+        // const underlyingPerReceptRatios = {}
+        // const receiptPerUnderlying = {}
+        // const prices = {}
+        // const underlyingPrices = {}
+
+        // for (let i = 0; i < whitelistedCollaterals.length; i++) {
+        //     const address = whitelistedCollaterals[i]
+
+        //     const price = await yetiController.methods.getPrice(address).call()
+
+        //     if (vaultTokens.includes(address)) {
+        //         let vault = new avax_web3.eth.Contract(yetiVaultAbi, address)
+
+        //         underlyingPerReceptRatios[address] = await vault.methods.underlyingPerReceipt().call()
+        //         receiptPerUnderlying[address] = await vault.methods.receiptPerUnderlying().call()
+
+        //         underlyingPrices[address] = receiptPerUnderlying[address] * price / 10 ** (18 - underlyingDecimals[address])
+        //     } else {
+        //         underlyingPerReceptRatios[address] = 1 ** 18
+        //         receiptPerUnderlying[address] = 1 ** 18
+        //         underlyingPrices[address] = price
+        //     }
+
+        //     prices[address] = price
+        // }
+
+        // data.underlyingPerReceptRatios.value = underlyingPerReceptRatios
+        // data.receiptPerUnderlying.value = receiptPerUnderlying
+        // data.prices.value = prices
+        // data.underlyingPrices.value = underlyingPrices
+        
+
+
+        Object.keys(data).forEach(key => {
+            data[key].avax_block = avax_blockNumber
+            data[key].timestamp = Date()
+        })
+        
+
+        // Finally after all data has been collected and formatted, we set up our database object and call db.updateYETIData() in order to cache our data in our MongoDB database.
+
+        try {
+        const client = db.getClient()
+        db.updateYetiControllerData(data, client) 
+        }
+        catch(err) {
+        console.log(err)
+        }
+    } catch(err) {
+        console.log("failed to update yetiController data with error ", err)
     }
-    catch(err) {
-      console.log(err)
-    }
+    
   }
 
   module.exports = getYetiControllerData
