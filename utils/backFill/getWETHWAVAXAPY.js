@@ -4,6 +4,7 @@ const JLPAbi = require("../../abi/JLPAbi.json")
 const priceFeedAbi = require("../../abi/PriceFeedAbi.json")
 const addresses = require("../../addresses/FarmPool")
 const numeral = require("numeral") // NPM package for formatting numbers
+const db = require("../db") // Util for setting up DB and main DB methods
 const SECONDS_PER_YEAR = 31622400
 const apyUtils = require("../apyUtils")
 
@@ -11,21 +12,13 @@ const POOL_FEE = 0.1
 const JOE_FEE = 0.6
 const PID = 1
 // Async function which takes in web3 collection, makes web3 calls to get current on chain data, formats data, and caches formatted data to MongoDB
-const getWETHWAVAXAPY = async (web3s) => {
+const getWETHWAVAXAPY = async (web3s, blockNum, timestamp) => {
     // Unpack web3 objects for Ethereum and avax
     const {avax_web3} = web3s
     // // Get Ethereum block number 
     // const blockNumber = await web3.eth.getBlockNumber()
-
-    let avax_blockNumber
-    try {
-        avax_blockNumber = await avax_web3.eth.getBlockNumber() 
-    }
-    catch(err) {
-        avax_blockNumber = 0
-        console.log("CANT GET avax_blockNumber")
-        console.log(err)
-    }
+    
+    avax_web3.eth.defaultBlock = blockNum
     // Collect addresses in one 'addresses' object
     const {avax_addresses} = addresses
     // Set number formatting default
@@ -93,8 +86,8 @@ const getWETHWAVAXAPY = async (web3s) => {
 
 
     Object.keys(APYData).forEach(key => {
-        APYData[key].block = avax_blockNumber
-        APYData[key].timestamp = Date()
+        APYData[key].block = blockNum
+        APYData[key].timestamp = new Date(timestamp * 1000)
     })
   
     // Finally after all data has been collected and formatted, we set up our database object and call db.updateYETIData() in order to cache our data in our MongoDB database.

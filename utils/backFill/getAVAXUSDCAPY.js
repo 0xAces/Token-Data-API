@@ -9,23 +9,15 @@ const apyUtils = require("../apyUtils")
 
 const POOL_FEE = 0.1
 const JOE_FEE = 0.6
-const PID = 1
+const PID = 0
 // Async function which takes in web3 collection, makes web3 calls to get current on chain data, formats data, and caches formatted data to MongoDB
-const getWETHWAVAXAPY = async (web3s) => {
+const getAVAXUSDCAPY = async (web3s, blockNum, timestamp) => {
     // Unpack web3 objects for Ethereum and avax
     const {avax_web3} = web3s
     // // Get Ethereum block number 
     // const blockNumber = await web3.eth.getBlockNumber()
-
-    let avax_blockNumber
-    try {
-        avax_blockNumber = await avax_web3.eth.getBlockNumber() 
-    }
-    catch(err) {
-        avax_blockNumber = 0
-        console.log("CANT GET avax_blockNumber")
-        console.log(err)
-    }
+    
+    avax_web3.eth.defaultBlock = blockNum
     // Collect addresses in one 'addresses' object
     const {avax_addresses} = addresses
     // Set number formatting default
@@ -37,9 +29,9 @@ const getWETHWAVAXAPY = async (web3s) => {
     // Here we instantiate the Ethereum smart contract object
     let JOEMC = new avax_web3.eth.Contract(boostedJoeMCV3Abi, avax_addresses.BoostedTJMCV3)
     let JOEPriceFeed = new avax_web3.eth.Contract(priceFeedAbi, avax_addresses.JOEPriceFeed)
-    let WETHWAVAXPriceFeed = new avax_web3.eth.Contract(priceFeedAbi, avax_addresses.WETHWAVAXJLPPriceFeed)
-    let WETHWAVAXJLP = new avax_web3.eth.Contract(JLPAbi, avax_addresses.WETHWAVAXJLP)
-
+    let AVAXUSDCPriceFeed = new avax_web3.eth.Contract(priceFeedAbi, avax_addresses.AVAXUSDCJLPPriceFeed)
+    let AVAXUSDCJLP = new avax_web3.eth.Contract(JLPAbi, avax_addresses.AVAXUSDCJLP)
+    
     // For converting to proper number of decimals. We use this to convert from raw numbers returned from web3 calls to human readable formatted numbers based on the decimals for each token.  
     const convert = (num, decimal) => {
         return Math.round((num / (10*10**(decimal-3))))/100
@@ -54,15 +46,19 @@ const getWETHWAVAXAPY = async (web3s) => {
     /**
      * Calculate JOE APY
      */
-    const LPStaked = Number(await WETHWAVAXJLP.methods.balanceOf(avax_addresses.BoostedTJMCV3).call())
     
-    const WETHWAVAXPrice =  Number(await WETHWAVAXPriceFeed.methods.fetchPrice_v().call())
+    const AVAXUSDCPrice =  Number(await AVAXUSDCPriceFeed.methods.fetchPrice_v().call())
 
-    const farmPoolLPValue = LPStaked * WETHWAVAXPrice
-
+    
+    
     const joePerSec = Number(await JOEMC.methods.joePerSec().call())
 
     const poolInfo = await JOEMC.methods.poolInfo(PID).call()
+
+    const LPStaked = Number(poolInfo[8])
+
+    const farmPoolLPValue = LPStaked * AVAXUSDCPrice
+
 
     const farmPoolAllocPoint = Number(poolInfo[1])
 
@@ -75,26 +71,26 @@ const getWETHWAVAXAPY = async (web3s) => {
     const JOEPrice = Number(await JOEPriceFeed.methods.fetchPrice_v().call())
 
     const joeAPY = joePerSec * farmPoolAllocPoint * JOEPrice * SECONDS_PER_YEAR * veJoeShareBp / (totalAllocPoint * farmPoolLPValue * 10000) 
+    
+    /**
+     * Calculate Pool APY
+     */
 
-/**
- * Calculate Pool APY
- */
-
-    const poolAPY = await apyUtils.calcPoolFeeAPY("https://api.coingecko.com/api/v3/coins/wrapped-avax/tickers?exchange_ids=traderjoe", 0.0025, WETHWAVAXJLP, WETHWAVAXPrice, avax_addresses.WETH, avax_addresses.WAVAX)
-   
+    const poolAPY = await apyUtils.calcPoolFeeAPY("https://api.coingecko.com/api/v3/coins/wrapped-avax/tickers?exchange_ids=traderjoe", 0.0025, AVAXUSDCJLP, AVAXUSDCPrice, avax_addresses.USDC, avax_addresses.WAVAX)
+    // console.log(poolAPY)
     // Calculate auto Compound APY
     const acJoeAPY = apyUtils.calcAutoCompound(joeAPY, 365)
 
     const acPoolAPY = apyUtils.calcAutoCompound(poolAPY, 365)
 
     const totalAPY = acJoeAPY * (1 - JOE_FEE) + acPoolAPY
-    APYData.APY.description = "WETH-WAVAX Pool Fee APY"
+    APYData.APY.description = "AVAX-USDC Pool Fee APY"
     APYData.APY.value = totalAPY
 
 
     Object.keys(APYData).forEach(key => {
-        APYData[key].block = avax_blockNumber
-        APYData[key].timestamp = Date()
+        APYData[key].block = blockNum
+        APYData[key].timestamp = new Date(timestamp * 1000)
     })
   
     // Finally after all data has been collected and formatted, we set up our database object and call db.updateYETIData() in order to cache our data in our MongoDB database.
@@ -102,4 +98,4 @@ const getWETHWAVAXAPY = async (web3s) => {
     return APYData
   }
 
-  module.exports = getWETHWAVAXAPY
+  module.exports = getAVAXUSDCAPY

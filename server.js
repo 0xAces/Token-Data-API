@@ -165,16 +165,16 @@ app.use('/v1/Collaterals/history/:token', async (req, res, next) => {
   console.log('match', match)
 
   console.log('project', project)
-  cachedData = await collection.aggregate([
-    {$match: match},
-    {$project: project},
-    { "$group": {
-        "_id": {$dateFromString: {dateString: {$substr: [`$${token}.APY.timestamp`, 0, 15]}}},
-        "average": { "$avg": `$${token}.APY.value` }
-    } }
-  ]).sort({_id: 1}).toArray()
+  // cachedData = await collection.aggregate([
+  //   {$match: match},
+  //   {$project: project},
+  //   { "$group": {
+  //       "_id": {$dateFromString: {dateString: {$substr: [`$${token}.APY.timestamp`, 0, 15]}}},
+  //       "average": { "$avg": `$${token}.APY.value` }
+  //   } }
+  // ]).sort({_id: 1}).toArray()
 
-  // cachedData = await collection.find({}, ss).project({sJOE: true}).sort({_id: 1}).limit(10).toArray()
+  cachedData = await collection.find({}, ss).project({WAVAX: true}).sort({_id: -1}).limit(500).toArray()
   
   if (!cachedData) {
     console.log('no data')
