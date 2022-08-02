@@ -33,9 +33,11 @@ const getJoeAPY = async (web3s) => {
     let JoePriceFeed = new avax_web3.eth.Contract(priceFeedAbi, priceFeedAddresses.JOE)
     const joePrice = Number(await JoePriceFeed.methods.fetchPrice_v().call()) / 10 ** 18
 
-    APIURL = "https://api.thegraph.com/subgraphs/id/Qmb9wzRvCXPhFb42Lo3oCvhuy5NiE76c7cSZFBW944FJJm"
+    stakeAPIURL = "https://api.thegraph.com/subgraphs/id/Qmb9wzRvCXPhFb42Lo3oCvhuy5NiE76c7cSZFBW944FJJm"
 
-    const tokensQuery = `
+    moneyMarketAPIURL = "https://api.thegraph.com/subgraphs/id/QmTQhopZCfQa7Ua2QDDmtwUWxSUYNMiVJFyQ9KPgpYG6NB"
+
+    const stakeQuery = `
         query($first: Int, $orderBy: BigInt, $orderDirection: String) {
             daySnapshots(first: $first, orderBy: $orderBy, orderDirection: $orderDirection) {
             dayIndex,
@@ -52,15 +54,24 @@ const getJoeAPY = async (web3s) => {
             }
         }
       `
+
+      const remitterQuery = `
+        query($first: Int, $orderBy: BigInt, $orderDirection: String) {
+            dayDatas(first: $first, orderBy: $orderBy, orderDirection: $orderDirection) {
+            date,
+            usdRemitted
+            }
+        }
+      `
     
-    const client = new ApolloClient({
-        link: new HttpLink({ uri: APIURL, fetch }),
+    const stakeClient = new ApolloClient({
+        link: new HttpLink({ uri: stakeAPIURL, fetch }),
         cache: new InMemoryCache(),
     });
 
-    const result = await client
+    const stakeResult = await stakeClient
         .query({
-            query: gql(tokensQuery),
+            query: gql(stakeQuery),
             variables: {
                 first: 7,
                 orderBy: 'dayIndex',
@@ -71,21 +82,45 @@ const getJoeAPY = async (web3s) => {
         .catch((err) => {
             console.log('Error fetching data: ', err)
         })
+
+    const remitterClient = new ApolloClient({
+        link: new HttpLink({ uri: moneyMarketAPIURL, fetch }),
+        cache: new InMemoryCache(),
+    });
+
+    const remitterResult = await remitterClient
+        .query({
+            query: gql(remitterQuery),
+            variables: {
+                first: 7,
+                orderBy: 'date',
+                orderDirection: 'desc',
+            },
+        })
+        .then((data) => data)
+        .catch((err) => {
+            console.log('Error fetching data: ', err)
+        })
+
     
     const sevenDayAPRs = []
 
     for (let i = 0; i < 7; i++) {
-        const dayData = result.data.daySnapshots[i]
-        if (dayData.rewards[0].changeInReward && dayData.totalStake) {
-            const USDCReward = Number(dayData.rewards[0].changeInReward) / 10 ** 6
-            const totalStaked = Number(dayData.totalStake) / 10 ** 18
-            const totalFee = Number(dayData.totalFee) / 10 ** 18
-            sevenDayAPRs.push((USDCReward) * 365 / (totalStaked * joePrice))
+        const dayTotalStaked = stakeResult.data.daySnapshots[i].totalStake
+        const dayRemitted = remitterResult.data.dayDatas[i].usdRemitted
+
+        if (dayTotalStaked && dayRemitted) {
+            
+            const dayilyAPR = Number(dayRemitted) * 365 / (Number(dayTotalStaked) / 10 ** 18 * joePrice)
+            sevenDayAPRs.push(dayilyAPR)
+            
         }
     }
     const average = sevenDayAPRs.reduce((a, b) => a + b, 0) / sevenDayAPRs.length;
 
-    APYData.APY.value = apyUtils.calcAutoCompound(average, 365) * (1 - .2)
+    console.log(average)
+
+    APYData.APY.value = average * (1 - .2)
 
     Object.keys(APYData).forEach(key => {
         APYData[key].block = avax_blockNumber
