@@ -8,31 +8,13 @@ const Web3 = require("web3")
 const sleep = require("ko-sleep");
 
 // Logic for collecting and calculating all data for Yeti
-const getYETIData = require("./getYETIData")
-
-// Logic for collecting and calculating all data for YUSD
-const getYUSDData = require("./getYUSDData")
-
-const getTJFarmPoolData = require("./getTJFarmPoolData")
-
-const getCollateralsData = require("./getCollateralsData")
-
-const getPLPPoolData = require("./getPLPPoolData")
-
-const getCurvePoolData = require("./getCurvePoolData")
-
-const getBoostData = require("./getBoostData")
-
-const getVaultData = require("./getVaultData")
-
-const getSortedTrovesData = require("./getSortedTroves")
-
-const getYetiControllerData = require("./getYetiControllerData")
-
-const getBackFillData = require("./getBackFillData")
+const getBackFillCollateralsData = require("./getBackFillCollateralsData")
 // const getPriceData = require("./getPriceData") 
 
 // Function to setup web3 objects for chains to be queried.
+
+const fetch = (...args) =>
+  import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 const setupWeb3 = async () => {
 
@@ -59,6 +41,7 @@ const setupWeb3 = async () => {
     }
 
     if (avax_web3.currentProvider) {
+      console.log('got avax web3 endpoints')
       break
     }
 
@@ -104,67 +87,35 @@ const getPastData = async (func = null, params) => {
 
 // This function passes the established web3 objects to the getYETIData and getYUSDData functions inside of the schedule functions. The schedule function comes from node-schedule and uses cron syntax which you can experiment with at [https://crontab.guru/.](https://crontab.guru/.) I"ve set it to update every 15 seconds here as it"s useful for testing purposes. A less frequent update schedule is recommended for production.
 
+const fetchBlockNum = async (timestamp) => {
+    let url = `https://api.snowtrace.io/api?module=block&action=getblocknobytime&timestamp=${timestamp}&closest=before&apikey=%22P54YDTVV45TB1WHBIC4HV4K3CCWBQGH6Q3%22`
+    let response = await fetch(url)
+    try {
+        let data = await response.json()
+        return data.result       
+    } catch(err) {
+        console.log(err)
+    }
+}
 const updateData = async (web3_collection) => {
   
   // getPLPPoolData(web3_collection)
 
-  schedule.scheduleJob({minute: 0, hour: 9}, async () => {
-
-    getYETIData(web3_collection).catch((err) => {
-      console.log('yeti error', err)
-      // await restart(err)
-    })
-
-    getTJFarmPoolData(web3_collection).catch((err) => {
-      console.log('farmpool error', err)
-      // await restart(err)
-    })
-
-    getCollateralsData(web3_collection).catch((err) => {
-      console.log('collaterals error', err)
-      // await restart(err)
-    })
-
-    getPLPPoolData(web3_collection).catch((err) => {
-      console.log('plp pool error', err)
-      // await restart(err)
-    })
-
-    getCurvePoolData(web3_collection).catch((err) => {
-      console.log('curve pool error', err)
-      // await restart(err)
-    })
-    
-  })
-
-  schedule.scheduleJob("*/10,*,*,*,*", async () => {
-
-    getYUSDData(web3_collection).catch((err) => {
-      console.log('yusd error', err)
-      // await restart(err)
-    })
-
-    getBoostData(web3_collection)
-
-  })
-
-  schedule.scheduleJob("15,30,45,59 * * * * *", async () => {
-
-    getSortedTrovesData(web3_collection).catch((err) => {
-      console.log('sorted error', err)
-    })
-
-    getYetiControllerData(web3_collection).catch((err) => {
-      console.log('controller error', err)
-    })
-
-  })
+  let timestamp = 1654387201
+  let SECONDS_PER_DAY = 86400
+  for (i = 0; i < 60; i++) {
+      let blockNum = await fetchBlockNum(timestamp)
+      console.log(blockNum)
+      await getBackFillCollateralsData(web3_collection, blockNum, timestamp)
+      timestamp = timestamp - SECONDS_PER_DAY
+  }
+ 
 } 
 // Here we define a function to call the async setupWeb3 function and use the resolved promise "web3_collection" as input for updateData which begins the update loop
 
-const getChainData = () => {
+const getBackFillData = () => {
   console.log('getting chain Data')
   setupWeb3().then((web3_collection) => updateData(web3_collection))
 }
 
-module.exports = {getChainData, getPastData}
+module.exports = getBackFillData

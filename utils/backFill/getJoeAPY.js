@@ -8,7 +8,7 @@ const fetch = require("cross-fetch")
 
 // Async function which takes in web3 collection, makes web3 calls to get current on chain data, formats data, and caches formatted data to MongoDB
 const getJoeAPY = async (web3s, blockNum, timestamp) => {
-    // Unpack web3 objects for Ethereum and avax
+    
     const {avax_web3} = web3s
     // // Get Ethereum block number 
     // const blockNumber = await web3.eth.getBlockNumber()
@@ -25,16 +25,16 @@ const getJoeAPY = async (web3s, blockNum, timestamp) => {
     let JoePriceFeed = new avax_web3.eth.Contract(priceFeedAbi, priceFeedAddresses.JOE)
     const joePrice = Number(await JoePriceFeed.methods.fetchPrice_v().call()) / 10 ** 18
 
-    console.log('backPrice', joePrice)
+    stakeAPIURL = "https://api.thegraph.com/subgraphs/id/Qmb9wzRvCXPhFb42Lo3oCvhuy5NiE76c7cSZFBW944FJJm"
 
-    APIURL = "https://api.thegraph.com/subgraphs/id/Qmb9wzRvCXPhFb42Lo3oCvhuy5NiE76c7cSZFBW944FJJm"
+    moneyMarketAPIURL = "https://api.thegraph.com/subgraphs/id/QmTQhopZCfQa7Ua2QDDmtwUWxSUYNMiVJFyQ9KPgpYG6NB"
 
-    const tokensQuery = `
-        query($first: Int, $orderBy: BigInt, $orderDirection: String,) {
+    const stakeQuery = `
+        query($first: Int, $orderBy: BigInt, $orderDirection: String) {
             daySnapshots(first: $first, orderBy: $orderBy, orderDirection: $orderDirection, where: {periodStartUnix_lt: ${timestamp}}) {
             dayIndex,
-            totalStake,
             periodStartUnix,
+            totalStake,
             rewards {
                 id,
                 rewardToken {
@@ -47,16 +47,24 @@ const getJoeAPY = async (web3s, blockNum, timestamp) => {
             }
         }
       `
-      console.log(tokensQuery)
+
+      const remitterQuery = `
+        query($first: Int, $orderBy: BigInt, $orderDirection: String) {
+            dayDatas(first: $first, orderBy: $orderBy, orderDirection: $orderDirection, where: {date_lt: ${timestamp}}) {
+            date,
+            usdRemitted
+            }
+        }
+      `
     
-    const client = new ApolloClient({
-        link: new HttpLink({ uri: APIURL, fetch }),
+    const stakeClient = new ApolloClient({
+        link: new HttpLink({ uri: stakeAPIURL, fetch }),
         cache: new InMemoryCache(),
     });
 
-    const result = await client
+    const stakeResult = await stakeClient
         .query({
-            query: gql(tokensQuery),
+            query: gql(stakeQuery),
             variables: {
                 first: 7,
                 orderBy: 'dayIndex',
@@ -67,26 +75,42 @@ const getJoeAPY = async (web3s, blockNum, timestamp) => {
         .catch((err) => {
             console.log('Error fetching data: ', err)
         })
+
+    const remitterClient = new ApolloClient({
+        link: new HttpLink({ uri: moneyMarketAPIURL, fetch }),
+        cache: new InMemoryCache(),
+    });
+
+    const remitterResult = await remitterClient
+        .query({
+            query: gql(remitterQuery),
+            variables: {
+                first: 7,
+                orderBy: 'date',
+                orderDirection: 'desc',
+            },
+        })
+        .then((data) => data)
+        .catch((err) => {
+            console.log('Error fetching data: ', err)
+        })
+
     
     const sevenDayAPRs = []
 
-    
     for (let i = 0; i < 7; i++) {
-        const dayData = result.data.daySnapshots[i]
-        console.log(dayData.dayIndex)
-        if (dayData.rewards[0].changeInReward && dayData.totalStake) {
-            const USDCReward = Number(dayData.rewards[0].changeInReward) / 10 ** 6
-            const totalStaked = Number(dayData.totalStake) / 10 ** 18
-            const totalFee = Number(dayData.totalFee) / 10 ** 18
-            console.log('pushing', (USDCReward) * 365 / (totalStaked * joePrice), new Date(dayData.periodStartUnix * 1000))
-            sevenDayAPRs.push((USDCReward) * 365 / (totalStaked * joePrice))
+        const dayTotalStaked = stakeResult.data.daySnapshots[i].totalStake
+        const dayRemitted = remitterResult.data.dayDatas[i].usdRemitted
+
+        if (dayTotalStaked && dayRemitted) {
+            
+            const dayilyAPR = Number(dayRemitted) * 365 / (Number(dayTotalStaked) / 10 ** 18 * joePrice)
+            sevenDayAPRs.push(dayilyAPR)
         }
     }
     const average = sevenDayAPRs.reduce((a, b) => a + b, 0) / sevenDayAPRs.length;
 
-    console.log('backAverage', average)
-
-    APYData.APY.value = apyUtils.calcAutoCompound(average, 365) * (1 - .2)
+    APYData.APY.value = average * (1 - .2)
 
     Object.keys(APYData).forEach(key => {
         APYData[key].block = blockNum

@@ -5,7 +5,7 @@ const convert = (num, decimal) => {
     return Math.round((num / (10*10**(decimal-3))))/100
 }
 
-async function calcPoolFeeAPY(apiUrl, feeRate, LPContractObject, LPPrice, base, target) {
+async function calcPoolFeeAPY(apiUrl, feeRate, LPContractObject, LPPrice, base, target, tradingVolume = null) {
     async function getVolume() {
         let response =  await fetch(apiUrl)
         try {
@@ -13,17 +13,20 @@ async function calcPoolFeeAPY(apiUrl, feeRate, LPContractObject, LPPrice, base, 
             for (var i = 0; i < data['tickers'].length; i++) {
                 const ticker = data['tickers'][i]
                 if (ticker['base'] == base && ticker['target'] == target) {
+                    console.log('original', data['tickers'][i]["converted_volume"]['usd'])
                     return data['tickers'][i]["converted_volume"]['usd']
                 }
-            }
+            }       
         } catch(err) {
             console.log(err)
         }
         
         return 0
     }
-    
-    const tradingVolume = await getVolume()
+
+    if (tradingVolume == null) {
+        tradingVolume = await getVolume()
+    }
     
     const feeShare = tradingVolume * feeRate * 365
     const totalLiquidity = Number(await LPContractObject.methods.totalSupply().call())

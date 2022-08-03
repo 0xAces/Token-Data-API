@@ -1,7 +1,7 @@
 const getQiBTCAPY = require("../collaterals/getQiBTCAPY")
 const backFillQiBTCAPY = require("./getQiBTCAPY")
-const getAPY = require("../collaterals/getJoeAPY")
-const backFillAPY = require("./getJoeAPY")
+const getAPY = require("../collaterals/getAVAXUSDCAPY")
+const backFillAPY = require("./getAVAXUSDCAPY")
 
 const Web3 = require("web3")
 const getJoeAPY = require("../collaterals/getJoeAPY")
@@ -63,9 +63,13 @@ const setupWeb3 = async () => {
 
 setupWeb3().then(async (web3_collection) => {
     let apy = await getAPY(web3_collection)
-    let backAPY = await backFillAPY(web3_collection, 
-      
+    let backAPY = await backFillAPY(web3_collection, 18173963, 1659555905)
+    // let timestamp = 1652569948
 
-      14626660 , 1652483548)
-    console.log(apy, backAPY)})
+    // const formattedTime = new Date(timestamp * 1000)
+
+    // console.log(formattedTime.getDate().toString() + '-' + (formattedTime.getMonth() + 1).toString() + '-' + formattedTime.getFullYear().toString())
+  
+  
+  })
 

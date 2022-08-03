@@ -6,6 +6,8 @@ const addresses = require("../../addresses/FarmPool")
 const numeral = require("numeral") // NPM package for formatting numbers
 const SECONDS_PER_YEAR = 31622400
 const apyUtils = require("../apyUtils")
+const { ApolloClient, InMemoryCache, gql, HttpLink } = require('@apollo/client/core')
+const fetch = require("cross-fetch")
 
 const POOL_FEE = 0.1
 const JOE_FEE = 0.6
@@ -76,7 +78,42 @@ const getAVAXUSDCAPY = async (web3s, blockNum, timestamp) => {
      * Calculate Pool APY
      */
 
-    const poolAPY = await apyUtils.calcPoolFeeAPY("https://api.coingecko.com/api/v3/coins/wrapped-avax/tickers?exchange_ids=traderjoe", 0.0025, AVAXUSDCJLP, AVAXUSDCPrice, avax_addresses.USDC, avax_addresses.WAVAX)
+    const volumeQuery = `
+        query {
+            pairDayDatas(first: 1, orderBy: date, orderDirection: desc, where:{date_lt: ${timestamp}, token0_: {id: "${avax_addresses.USDC.toLowerCase()}"}, token1_: {id:  "${avax_addresses.WAVAX.toLowerCase()}"}}) {
+                token0 {
+                  id
+                }
+                token1 {
+                  id
+                }
+                date
+                volumeToken0
+                volumeToken1
+                volumeUSD
+              }
+        }
+      `
+
+    const joeAPIURL = 'https://api.thegraph.com/subgraphs/name/traderjoe-xyz/exchange'
+
+    const volumeClient = new ApolloClient({
+        link: new HttpLink({ uri: joeAPIURL, fetch }),
+        cache: new InMemoryCache(),
+    });
+
+    const volumeResult = await volumeClient
+        .query({
+            query: gql(volumeQuery),
+        })
+        .then((data) => data)
+        .catch((err) => {
+            console.log('Error fetching data: ', err)
+        })
+
+    const volume = Number(volumeResult.data.pairDayDatas[0].volumeUSD)
+
+    const poolAPY = await apyUtils.calcPoolFeeAPY("https://api.coingecko.com/api/v3/coins/wrapped-avax/tickers?exchange_ids=traderjoe", 0.0025, AVAXUSDCJLP, AVAXUSDCPrice, avax_addresses.USDC, avax_addresses.WAVAX, tradingVolume = volume)
     // console.log(poolAPY)
     // Calculate auto Compound APY
     const acJoeAPY = apyUtils.calcAutoCompound(joeAPY, 365)

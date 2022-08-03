@@ -87,6 +87,23 @@ updateCollateralsData = async (chainData, client) => {
     }
 }
 
+updateBackFillCollateralsData = async (chainData, client) => {
+    try {
+        const database = client.db('YetiFinance')
+        const collection = database.collection('BackFillCollaterals')
+        chainData.timestamp = Date.now()
+        let newChainData = Object.assign({}, chainData)
+        newChainData._id = ObjectId()
+        
+        // console.log(`Deleted: Collaterals Data ${deleteResult.deletedCount}`)
+        await collection.insertOne(newChainData)
+        console.log("Inserted new BackFill Collaterals Data entries")
+    } 
+    catch(err) {
+        console.log(err)
+    }
+}
+
 updatePLPPoolData = async (chainData, client) => {
     try {
         const database = client.db('YetiFinance')
@@ -240,6 +257,19 @@ getCachedCollateralsData = async (client) => {
     }
 }
 
+getCachedBackFillCollateralsData = async (client) => {
+    try {
+        const database = client.db('YetiFinance')
+        const collection = database.collection('BackFillCollaterals')
+        cachedData = await collection.find().sort({ _id: -1 }).limit(1).toArray()
+        console.log(cachedData)
+        return cachedData    
+    } 
+    catch(err) {
+        console.log(err)
+    }
+}
+
 getCachedPLPPoolData = async (client) => {
     try {
         const database = client.db('YetiFinance')
@@ -341,6 +371,8 @@ module.exports = {
     updateSortedTrovesData,
     getCachedSortedTrovesData,
     updateYetiControllerData,
-    getCachedYetiControllerData
+    getCachedYetiControllerData,
+    updateBackFillCollateralsData,
+    getCachedBackFillCollateralsData
 }
 

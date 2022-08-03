@@ -4,9 +4,10 @@ const JLPAbi = require("../../abi/JLPAbi.json")
 const priceFeedAbi = require("../../abi/PriceFeedAbi.json")
 const addresses = require("../../addresses/FarmPool")
 const numeral = require("numeral") // NPM package for formatting numbers
-const db = require("../db") // Util for setting up DB and main DB methods
 const SECONDS_PER_YEAR = 31622400
 const apyUtils = require("../apyUtils")
+const { ApolloClient, InMemoryCache, gql, HttpLink } = require('@apollo/client/core')
+const fetch = require("cross-fetch")
 
 const POOL_FEE = 0.1
 const JOE_FEE = 0.6
@@ -72,8 +73,48 @@ const getWETHWAVAXAPY = async (web3s, blockNum, timestamp) => {
 /**
  * Calculate Pool APY
  */
+    const time = new Date(timestamp * 1000)
 
-    const poolAPY = await apyUtils.calcPoolFeeAPY("https://api.coingecko.com/api/v3/coins/wrapped-avax/tickers?exchange_ids=traderjoe", 0.0025, WETHWAVAXJLP, WETHWAVAXPrice, avax_addresses.WETH, avax_addresses.WAVAX)
+    let timeString = time.getDate().toString() + '-' + (time.getMonth() + 1).toString() + '-' + time.getFullYear().toString()
+
+    // console.log(timeString)
+
+    const volumeQuery = `
+        query {
+            pairDayDatas(first: 1, orderBy: date, orderDirection: desc, where:{date_lt: ${timestamp}, token0_: {id: "${avax_addresses.WETH.toLowerCase()}"}, token1_: {id:  "${avax_addresses.WAVAX.toLowerCase()}"}}) {
+                token0 {
+                  id
+                }
+                token1 {
+                  id
+                }
+                date
+                volumeToken0
+                volumeToken1
+                volumeUSD
+              }
+        }
+      `
+
+    const joeAPIURL = 'https://api.thegraph.com/subgraphs/name/traderjoe-xyz/exchange'
+
+    const volumeClient = new ApolloClient({
+        link: new HttpLink({ uri: joeAPIURL, fetch }),
+        cache: new InMemoryCache(),
+    });
+
+    const volumeResult = await volumeClient
+        .query({
+            query: gql(volumeQuery),
+        })
+        .then((data) => data)
+        .catch((err) => {
+            console.log('Error fetching data: ', err)
+        })
+
+    const volume = Number(volumeResult.data.pairDayDatas[0].volumeUSD)
+
+    const poolAPY = await apyUtils.calcPoolFeeAPY(`https://api.coingecko.com/api/v3/coins/wrapped-avax/history?date=${timeString}`, 0.0025, WETHWAVAXJLP, WETHWAVAXPrice, avax_addresses.WETH, avax_addresses.WAVAX, tradingVolume = volume)
    
     // Calculate auto Compound APY
     const acJoeAPY = apyUtils.calcAutoCompound(joeAPY, 365)
