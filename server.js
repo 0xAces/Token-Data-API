@@ -51,12 +51,12 @@ app.use(morgan('tiny'))
 
 // Remove trailing slash
 
-app.all('*', (req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET');
-  next();
-});
+// app.all('*', (req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", 'https://app.yeti.finance');
+//   res.header('Access-Control-Allow-Credentials', 'true');
+//   res.header('Access-Control-Allow-Methods', 'GET');
+//   next();
+// });
 
 // Routes
 app.use(/^\/$/, (req, res, next) => {
@@ -67,7 +67,7 @@ app.use(/^\/$/, (req, res, next) => {
 
 
 // add cached data to req
-app.use('/v1/YUSD', async (req, res, next) => {
+app.get('/v1/YUSD', async (req, res, next) => {
 
   const client = db.getClient()
   try {
@@ -81,7 +81,7 @@ app.use('/v1/YUSD', async (req, res, next) => {
 })
 
 // add cached data to req
-app.use('/v1/YETI', async (req, res, next) => {
+app.get('/v1/YETI', async (req, res, next) => {
   
   const client = db.getClient()
   try {
@@ -107,7 +107,7 @@ app.use('/v1/FarmPool', async (req, res, next) => {
   next()
 })
 
-app.use('/v1/PLPPool', async (req, res, next) => {
+app.get('/v1/PLPPool', async (req, res, next) => {
   
   const client = db.getClient()
   try {
@@ -120,7 +120,7 @@ app.use('/v1/PLPPool', async (req, res, next) => {
   next()
 })
 
-app.use('/v1/CurvePool', async (req, res, next) => {
+app.get('/v1/CurvePool', async (req, res, next) => {
   
   const client = db.getClient()
   try {
@@ -133,7 +133,7 @@ app.use('/v1/CurvePool', async (req, res, next) => {
   next()
 })
 
-app.use('/v1/Collaterals', async (req, res, next) => {
+app.get('/v1/Collaterals', async (req, res, next) => {
   
   const client = db.getClient()
   try {
@@ -146,7 +146,7 @@ app.use('/v1/Collaterals', async (req, res, next) => {
   next()
 })
 
-app.use('/v1/Boost', async (req, res, next) => {
+app.get('/v1/Boost', async (req, res, next) => {
   
   const client = db.getClient()
   try {
@@ -159,7 +159,7 @@ app.use('/v1/Boost', async (req, res, next) => {
   next()
 })
 
-app.use('/v1/Vault/:blockNum', async (req, res, next) => {
+app.get('/v1/Vault/:blockNum', async (req, res, next) => {
   const client = db.getClient()
   const database = client.db('YetiFinance')
   const collection = database.collection('Vault')
@@ -172,7 +172,7 @@ app.use('/v1/Vault/:blockNum', async (req, res, next) => {
   next()
 })
 
-app.use('/v1/SortedTroves', async (req, res, next) => {
+app.get('/v1/SortedTroves', async (req, res, next) => {
   
   const client = db.getClient()
   try {
@@ -185,7 +185,7 @@ app.use('/v1/SortedTroves', async (req, res, next) => {
   next()
 })
 
-app.use('/v1/YetiController', async (req, res, next) => {
+app.get('/v1/YetiController', async (req, res, next) => {
   
   const client = db.getClient()
   try {
@@ -209,7 +209,16 @@ app.use('/v1/Vault', VaultRoutes)
 app.use('/v1/Sortedtroves', SortedTrovesRoutes)
 app.use('/v1/YetiController', YetiControllerRoutes)
 
+// app.use("\/\/*", (req, res, next) => {
+//   console.log("catch")
+//   res.redirect("/")
+//   next();
+// });
+
+
+
 app.use((req, res) => {
+  // console.log(req)
   res.status(404).json({error: true, message: "Resource not found"})
 })
 

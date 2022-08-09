@@ -11,6 +11,14 @@ app.get('/WhitelistedCollaterals', (req, res) => {
   res.json(req.chainData.whitelistedCollaterals.value)
 })
 
+app.get('/Vaults', (req, res) => {
+  res.json(req.chainData.vaultTokens.value)
+})
+
+app.get('/Prices', (req, res) => {
+  res.json(req.chainData.prices.value)
+})
+
 
 
 
