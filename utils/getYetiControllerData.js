@@ -7,7 +7,7 @@ const numeral = require("numeral") // NPM package for formatting numbers
 const db = require("./db") // Util for setting up DB and main DB methods
 const { tokenDataMappingA } = require("../TokenData/index")
 
-const YETICONTROLLERMULTICALL = "0xED12214FDe242a853A4b99B530Bc57317a037926"
+const YETICONTROLLERMULTICALL = "0xd205639402F04baCDa998A3C86367d65fEB393bC"
 
 const getYetiControllerData = async (web3s) => {
     // Unpack web3 objects for Ethereum and avax
@@ -67,6 +67,10 @@ const getYetiControllerData = async (web3s) => {
         underlyingPrices: {
             value: null,
             description: "Mapping of whitelisted Collaterals to their prices (underlying prices if collateral is a valut token)."
+        },
+        tvls:{
+            value: null,
+            description: "Mappings of vaultTokens to their TVLs"
         }
     }
 
@@ -84,6 +88,7 @@ const getYetiControllerData = async (web3s) => {
         const receiptPerUnderlyingRatios = {}
         const prices = {}
         const underlyingPrices = {}
+        const tvls = {}
 
         whitelistedCollaterals.forEach((_, i) => {
             const address = whitelistedCollaterals[i]
@@ -93,6 +98,7 @@ const getYetiControllerData = async (web3s) => {
             receiptPerUnderlyingRatios[address] = yetiControllerData[5][i]
             prices[address] = yetiControllerData[6][i]
             underlyingPrices[address] = yetiControllerData[7][i]
+            tvls[address] = yetiControllerData[8][i]
         })
 
         data.underlyingDecimals.value = underlyingDecimals
@@ -100,6 +106,7 @@ const getYetiControllerData = async (web3s) => {
         data.receiptPerUnderlyingRatios.value = receiptPerUnderlyingRatios
         data.prices.value = prices
         data.underlyingPrices.value = underlyingPrices
+        data.tvls.value = tvls
 
 
 
