@@ -6,6 +6,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const db = require('./utils/db')
 
+const SanctionRoutes = require('./routes/Sanction')
 const YETIRoutes = require('./routes/YETI')
 const YUSDRoutes = require('./routes/YUSD')
 const FarmPoolRoutes = require("./routes/FarmPool")
@@ -19,7 +20,9 @@ const SortedTrovesRoutes = require("./routes/SortedTroves")
 const YetiControllerRoutes = require("./routes/YetiController")
 const sleep = require("ko-sleep");
 const removeTrailingSlash = require('./middleware/removeTrailingSlash');
-
+const chainlysisAbi = require ("./abi/ChainlysisAbi.json")
+const chainlysis_address = require("./addresses/chainlysis")
+const Web3 = require("web3")
 
 const PORT = process.env.PORT || 3001
 
@@ -64,7 +67,33 @@ app.use(/^\/$/, (req, res, next) => {
   next()
 })
 
+app.use('/v1/sanction/:address', async (req, res, next) => {
 
+  const rpcurl = "https://api.avax.network/ext/bc/C/rpc";
+  const web3 = new Web3(rpcurl);
+
+  let account = req.params['address']
+  let address = chainlysis_address.chainlysis_address
+
+  const contract = new web3.eth.Contract(chainlysisAbi, address);
+  let sanctioned = await contract.methods.isSanctioned(account).call((err, sanctioned) => { 
+    return sanctioned;
+    });
+  
+  let result = {
+    address: account,
+    sanctioned: sanctioned
+  }
+
+  try {
+    req.chainData = result
+  }
+  catch(err){
+    console.log("error getting data")
+    console.log(err)
+  }
+  next()
+})
 
 // add cached data to req
 app.use('/v1/YUSD', async (req, res, next) => {
@@ -198,6 +227,7 @@ app.use('/v1/YetiController', async (req, res, next) => {
   next()
 })
 
+app.use('/v1/sanction', SanctionRoutes)
 app.use('/v1/YETI', YETIRoutes)
 app.use('/v1/YUSD', YUSDRoutes)
 app.use('/v1/FarmPool', FarmPoolRoutes)
