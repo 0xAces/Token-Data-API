@@ -127,7 +127,7 @@ const updateData = async (web3_collection) => {
 
     getSortedTrovesData(web3_collection)
 
-    getYetiControllerData(web3_collection)
+    // getYetiControllerData(web3_collection)
 
   })
 
