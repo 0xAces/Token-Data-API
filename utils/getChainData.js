@@ -97,27 +97,46 @@ const getPastData = async (func = null, params) => {
 // This function passes the established web3 objects to the getYETIData and getYUSDData functions inside of the schedule functions. The schedule function comes from node-schedule and uses cron syntax which you can experiment with at [https://crontab.guru/.](https://crontab.guru/.) I"ve set it to update every 15 seconds here as it"s useful for testing purposes. A less frequent update schedule is recommended for production.
 
 const updateData = async (web3_collection) => {
-
+  
   // getPLPPoolData(web3_collection)
+
+  // getBackFillData()
 
   schedule.scheduleJob({minute: 0, hour: 9}, async () => {
 
-    getYETIData(web3_collection)
+    getYETIData(web3_collection).catch((err) => {
+      console.log('yeti error', err)
+      // await restart(err)
+    })
 
-    getTJFarmPoolData(web3_collection)
+    getTJFarmPoolData(web3_collection).catch((err) => {
+      console.log('farmpool error', err)
+      // await restart(err)
+    })
 
-    getCollateralsData(web3_collection)
+    getCollateralsData(web3_collection).catch((err) => {
+      console.log('collaterals error', err)
+      // await restart(err)
+    })
 
-    getPLPPoolData(web3_collection)
+    getPLPPoolData(web3_collection).catch((err) => {
+      console.log('plp pool error', err)
+      // await restart(err)
+    })
 
-    getCurvePoolData(web3_collection)
-
-
+    getCurvePoolData(web3_collection).catch((err) => {
+      console.log('curve pool error', err)
+      // await restart(err)
+    })
+    
   })
 
   schedule.scheduleJob("*/10,*,*,*,*", async () => {
 
-    getYUSDData(web3_collection)
+    getYUSDData(web3_collection).catch((err) => {
+      console.log('yusd error', err)
+      // await restart(err)
+    })
 
     getBoostData(web3_collection)
 
@@ -125,13 +144,16 @@ const updateData = async (web3_collection) => {
 
   schedule.scheduleJob("15,30,45,59 * * * * *", async () => {
 
-    getSortedTrovesData(web3_collection)
+    getSortedTrovesData(web3_collection).catch((err) => {
+      console.log('sorted error', err)
+    })
 
-    // getYetiControllerData(web3_collection)
+    // getYetiControllerData(web3_collection).catch((err) => {
+    //   console.log('controller error', err)
+    // })
 
   })
-
-}
+} 
 
 // Here we define a function to call the async setupWeb3 function and use the resolved promise "web3_collection" as input for updateData which begins the update loop
 
