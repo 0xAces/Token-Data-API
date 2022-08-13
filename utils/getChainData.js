@@ -36,8 +36,8 @@ const setupWeb3 = async () => {
 
   const avax_endpoints = [
 
-    "https://api.avax.network/ext/bc/C/rpc"
-    // "https://avax-mainnet.gateway.pokt.network/v1/lb/62c5d1bc976624003a93890f"
+    // "https://api.avax.network/ext/bc/C/rpc"
+    "https://avax-mainnet.gateway.pokt.network/v1/lb/62c5d1bc976624003a93890f"
   ]
 
   let avax_web3
@@ -138,7 +138,10 @@ const updateData = async (web3_collection) => {
       // await restart(err)
     })
 
-    getBoostData(web3_collection)
+    getBoostData(web3_collection).catch((err) => {
+      console.log('boost error', err)
+      // await restart(err)
+    })
 
   })
 
@@ -148,9 +151,9 @@ const updateData = async (web3_collection) => {
       console.log('sorted error', err)
     })
 
-    // getYetiControllerData(web3_collection).catch((err) => {
-    //   console.log('controller error', err)
-    // })
+    getYetiControllerData(web3_collection).catch((err) => {
+      console.log('controller error', err)
+    })
 
   })
 } 
