@@ -113,7 +113,7 @@ const getYetiControllerData = async (web3s) => {
         data.prices.value = prices
         data.underlyingPrices.value = underlyingPrices
         data.tvls.value = tvls
-        data.vaultToName.valut = addressToName
+        data.vaultToName.value = addressToName
 
 
 
