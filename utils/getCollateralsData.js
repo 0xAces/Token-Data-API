@@ -60,7 +60,7 @@ const getCollateralsData = async (web3s) => {
     collateralsData.aWETH = await getaWETHAPY(web3s)
     collateralsData.aUSDT = await getaUSDTAPY(web3s)
     collateralsData.sJOE = await getJoeAPY(web3s)
-    
+
     // Finally after all data has been collected and formatted, we set up our database object and call db.updateYETIData() in order to cache our data in our MongoDB database.
 
     try {

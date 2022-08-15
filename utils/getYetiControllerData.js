@@ -71,6 +71,10 @@ const getYetiControllerData = async (web3s) => {
         tvls:{
             value: null,
             description: "Mappings of vaultTokens to their TVLs"
+        },
+        vaultToName: {
+            valut: null,
+            description: "Mappings of vaultTokens to token names"
         }
     }
 
@@ -89,6 +93,7 @@ const getYetiControllerData = async (web3s) => {
         const prices = {}
         const underlyingPrices = {}
         const tvls = {}
+        const addressToName = {}
 
         whitelistedCollaterals.forEach((_, i) => {
             const address = whitelistedCollaterals[i]
@@ -99,6 +104,7 @@ const getYetiControllerData = async (web3s) => {
             prices[address] = yetiControllerData[6][i]
             underlyingPrices[address] = yetiControllerData[7][i]
             tvls[address] = yetiControllerData[8][i]
+            addressToName[address] = tokenDataMappingA[address].token
         })
 
         data.underlyingDecimals.value = underlyingDecimals
@@ -107,6 +113,7 @@ const getYetiControllerData = async (web3s) => {
         data.prices.value = prices
         data.underlyingPrices.value = underlyingPrices
         data.tvls.value = tvls
+        data.vaultToName.valut = addressToName
 
 
 
