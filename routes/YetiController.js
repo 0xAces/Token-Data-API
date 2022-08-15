@@ -23,6 +23,10 @@ app.get('/vaultToName', (req, res) => {
   res.json(req.chainData.vaultToName.value)
 })
 
+app.get('/underlyingTokens', (req, res) => {
+  res.json(req.chainData.underlyingTokens.value)
+})
+
 
 
 module.exports = app
