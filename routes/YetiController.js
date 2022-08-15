@@ -19,6 +19,10 @@ app.get('/Prices', (req, res) => {
   res.json(req.chainData.prices.value)
 })
 
+app.get('/tvls', (req, res) => {
+  res.json(req.chainData.tvls.value)
+})
+
 app.get('/vaultToName', (req, res) => {
   res.json(req.chainData.vaultToName.value)
 })
