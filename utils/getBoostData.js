@@ -62,12 +62,16 @@ const getBoostData = async (web3s) => {
         })
 
     const userList = []
+    
+    if (userListResult.data) {
+        userListResult.data.farmOperations.map((operation) => {
+            if (!userList.includes(operation.user)) {
+            userList.push(operation.user)
+            }
+        })
+    }
 
-    userListResult.data.farmOperations.map((operation) => {
-        if (!userList.includes(operation.user)) {
-        userList.push(operation.user)
-        }
-    })
+    
 
 
 
