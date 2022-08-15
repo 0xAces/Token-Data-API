@@ -27,7 +27,7 @@ const Web3 = require("web3")
 const PORT = process.env.PORT || 3001
 
 // Call getChainData here to begin chain data update loop and start caching new data to database
-// getChainData.getChainData()
+getChainData.getChainData()
 
 const app = express()
 

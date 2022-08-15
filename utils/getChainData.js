@@ -148,9 +148,9 @@ const updateData = async (web3_collection) => {
       console.log('sorted error', err)
     })
 
-    // getYetiControllerData(web3_collection).catch((err) => {
-    //   console.log('controller error', err)
-    // })
+    getYetiControllerData(web3_collection).catch((err) => {
+      console.log('controller error', err)
+    })
 
   })
 } 
