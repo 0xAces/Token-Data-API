@@ -35,7 +35,7 @@ const getYetiControllerData = require("./getYetiControllerData")
 const setupWeb3 = async () => {
 
   const avax_endpoints = [
-    
+    "https://rpc.ankr.com/avalanche",
     "https://api.avax.network/ext/bc/C/rpc",
     "https://ava-mainnet.public.blastapi.io/ext/bc/C/rpc"
     // "https://avax-mainnet.gateway.pokt.network/v1/lb/62c5d1bc976624003a93890f"
