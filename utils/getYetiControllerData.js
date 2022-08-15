@@ -73,7 +73,7 @@ const getYetiControllerData = async (web3s) => {
             description: "Mappings of vaultTokens to their TVLs"
         },
         vaultToName: {
-            valut: null,
+            value: null,
             description: "Mappings of vaultTokens to token names"
         }
     }
