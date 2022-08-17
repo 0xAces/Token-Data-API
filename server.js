@@ -249,7 +249,9 @@ app.use('/v1/YetiController', YetiControllerRoutes)
 
 app.use((req, res) => {
   // console.log(req)
+  res.redirect(301, req.url.replace("\/\/", "/"))
   res.status(404).json({error: true, message: "Resource not found"})
+  
 })
 
 app.listen(PORT)
