@@ -23,6 +23,7 @@
     "@apollo/client": "^3.6.5",
     "body-parser": "^1.20.0",
     "coingecko-api": "^1.0.10",
+    "connect-slashes": "^1.4.0",
     "cors": "^2.8.5",
     "cross-fetch": "^3.1.5",
     "dotenv": "^16.0.0",

@@ -5,6 +5,7 @@ const morgan = require('morgan')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const db = require('./utils/db')
+const slashes = require("connect-slashes");
 
 const SanctionRoutes = require('./routes/Sanction')
 const YETIRoutes = require('./routes/YETI')
@@ -31,6 +32,12 @@ getChainData.getChainData()
 
 const app = express()
 
+// remove trailing slash
+// app.use(removeTrailingSlash);
+
+// Remove trailing slash
+app.use(slashes(false))
+
 // Limit request rate
 const limiter = rateLimit({
   windowMs: 60 * 1000 * 10, // 15 minutes
@@ -38,21 +45,20 @@ const limiter = rateLimit({
 });
  
 //  apply to all requests
-app.use(cors({origin: ['http://localhost:3000', 'https://app.yeti.finance'], methods: ["GET"]}))
+app.use(cors({origin: ['http://localhost:3000', 'https://app.yeti.finance', 'https://beta.yeti.finance'], methods: ["GET"]}))
 app.use(bodyParser.text())
 
 
 // limit requests
 app.use(limiter);
 
-// remove trailing slash
-app.use(removeTrailingSlash);
+
 
 
 // Logging
 app.use(morgan('tiny'))
 
-// Remove trailing slash
+
 
 // app.all('*', (req, res, next) => {
 //   res.header("Access-Control-Allow-Origin", 'https://app.yeti.finance');
@@ -62,7 +68,7 @@ app.use(morgan('tiny'))
 // });
 
 // Routes
-app.use(/^\/$/, (req, res, next) => {
+app.get("/", (req, res, next) => {
   res.send("Welcome to the YetiFinance API!")
   next()
 })
@@ -239,17 +245,9 @@ app.use('/v1/Vault', VaultRoutes)
 app.use('/v1/Sortedtroves', SortedTrovesRoutes)
 app.use('/v1/YetiController', YetiControllerRoutes)
 
-// app.use("\/\/*", (req, res, next) => {
-//   console.log("catch")
-//   res.redirect("/")
-//   next();
-// });
-
-
 
 app.use((req, res) => {
   // console.log(req)
-  res.redirect(301, req.url.replace("\/\/", "/"))
   res.status(404).json({error: true, message: "Resource not found"})
   
 })
