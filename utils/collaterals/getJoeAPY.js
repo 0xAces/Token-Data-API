@@ -31,8 +31,22 @@ const getJoeAPY = async (web3s) => {
     }
 
     let JoePriceFeed = new avax_web3.eth.Contract(priceFeedAbi, priceFeedAddresses.JOE)
-    const joePrice = Number(await JoePriceFeed.methods.fetchPrice_v().call()) / 10 ** 18
 
+    
+    const joePrice = Number(await JoePriceFeed.methods.fetchPrice_v().call()) / 10 ** 18
+    async function getPrice() {
+        let response =  await fetch("https://api.coingecko.com/api/v3/coins/joe/market_chart?vs_currency=usd&days=30&interval=daily")
+        try {
+            let data = await response.json()
+            return data.prices
+        } catch(err) {
+            console.log(err)
+        }
+        
+        return []
+    }
+
+    const joePrices = await getPrice()
     stakeAPIURL = "https://api.thegraph.com/subgraphs/id/Qmb9wzRvCXPhFb42Lo3oCvhuy5NiE76c7cSZFBW944FJJm"
 
     moneyMarketAPIURL = "https://api.thegraph.com/subgraphs/id/QmTQhopZCfQa7Ua2QDDmtwUWxSUYNMiVJFyQ9KPgpYG6NB"
@@ -73,7 +87,7 @@ const getJoeAPY = async (web3s) => {
         .query({
             query: gql(stakeQuery),
             variables: {
-                first: 7,
+                first: 30,
                 orderBy: 'dayIndex',
                 orderDirection: 'desc',
             },
@@ -92,7 +106,7 @@ const getJoeAPY = async (web3s) => {
         .query({
             query: gql(remitterQuery),
             variables: {
-                first: 7,
+                first: 30,
                 orderBy: 'date',
                 orderDirection: 'desc',
             },
@@ -105,22 +119,23 @@ const getJoeAPY = async (web3s) => {
     
     const sevenDayAPRs = []
 
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 30; i++) {
         const dayTotalStaked = stakeResult.data.daySnapshots[i].totalStake
-        const dayRemitted = remitterResult.data.dayDatas[i].usdRemitted
-
-        if (dayTotalStaked && dayRemitted) {
+        const dayRemitted = stakeResult.data.daySnapshots[i].rewards[0].changeInReward
+        const price = joePrices[i][1]
+        if (dayTotalStaked && dayRemitted && price) {
             
-            const dayilyAPR = Number(dayRemitted) * 365 / (Number(dayTotalStaked) / 10 ** 18 * joePrice)
+            const dayilyAPR = Number(dayRemitted) / 10 ** 6 * 365 / (Number(dayTotalStaked) / 10 ** 18 * price)
             sevenDayAPRs.push(dayilyAPR)
             
         }
     }
     const average = sevenDayAPRs.reduce((a, b) => a + b, 0) / sevenDayAPRs.length;
 
-    console.log(average)
+    console.log("average", average)
 
     APYData.APY.value = average * (1 - .2)
+
 
     Object.keys(APYData).forEach(key => {
         APYData[key].block = avax_blockNumber

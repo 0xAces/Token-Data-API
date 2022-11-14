@@ -101,20 +101,19 @@ const updateData = async (web3_collection) => {
   
   // getPLPPoolData(web3_collection)
 
-  let timestamp = 1654387201
+  let timestamp = 1667865600
   let SECONDS_PER_DAY = 86400
   for (i = 0; i < 60; i++) {
       let blockNum = await fetchBlockNum(timestamp)
-      console.log(blockNum)
+      console.log("backFilling for", new Date(timestamp * 1000), blockNum)
       await getBackFillCollateralsData(web3_collection, blockNum, timestamp)
       timestamp = timestamp - SECONDS_PER_DAY
   }
- 
 } 
 // Here we define a function to call the async setupWeb3 function and use the resolved promise "web3_collection" as input for updateData which begins the update loop
 
 const getBackFillData = () => {
-  console.log('getting chain Data')
+  console.log('getting backFill Data')
   setupWeb3().then((web3_collection) => updateData(web3_collection))
 }
 

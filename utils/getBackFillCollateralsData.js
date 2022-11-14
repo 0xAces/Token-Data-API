@@ -15,9 +15,10 @@ const getaWETHAPY = require("./backFill/getaWETHAPY")
 const getaUSDTAPY = require("./backFill/getaUSDTAPY")
 const getaDAIAPY = require("./backFill/getaDAIAPY")
 const getJoeAPY = require("./backFill/getJoeAPY")
+const getGLPAPY = require("./backFill/getGLPAPY")
 
 // Async function which takes in web3 collection, makes web3 calls to get current on chain data, formats data, and caches formatted data to MongoDB
-const getCollateralsData = async (web3s, blockNum, timestamp) => {
+const getBackFillCollateralsData = async (web3s, blockNum, timestamp) => {
     
     let collateralsData = {
         WAVAX: {APY: {value: 0}},
@@ -42,6 +43,7 @@ const getCollateralsData = async (web3s, blockNum, timestamp) => {
         aDAI: null,
         aUSDT: null,
         sJOE: null,
+        GLP: {APY: {value: 0.171}},
     }
 
     collateralsData.WETHWAVAXJLP = await getWETHWAVAXAPY(web3s, blockNum, timestamp)
@@ -60,17 +62,18 @@ const getCollateralsData = async (web3s, blockNum, timestamp) => {
     collateralsData.aWETH = await getaWETHAPY(web3s, blockNum, timestamp)
     collateralsData.aUSDT = await getaUSDTAPY(web3s, blockNum, timestamp)
     collateralsData.sJOE = await getJoeAPY(web3s, blockNum, timestamp)
+    // collateralsData.GLP = await getGLPAPY(web3s, blockNum, timestamp)
     
     // Finally after all data has been collected and formatted, we set up our database object and call db.updateYETIData() in order to cache our data in our MongoDB database.
 
     try {
       const client = db.getClient()
-      console.log('got backFillCollaterals', timestamp, blockNum)
-      db.updateBackFillCollateralsData(collateralsData, client) 
+      console.log('got backFillCollaterals', timestamp, blockNum, collateralsData)
+      db.updateCollateralsData(collateralsData, client, timestamp) 
     }
     catch(err) {
       console.log(err)
     }
   }
 
-  module.exports = getCollateralsData
+  module.exports = getBackFillCollateralsData

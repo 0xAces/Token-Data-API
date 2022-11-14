@@ -70,11 +70,11 @@ updateFarmPoolData = async (chainData, client) => {
     }
 }
 
-updateCollateralsData = async (chainData, client) => {
+updateCollateralsData = async (chainData, client, timestamp) => {
     try {
         const database = client.db('YetiFinance')
         const collection = database.collection('Collaterals')
-        chainData.timestamp = Date.now()
+        chainData.timestamp = new Date(timestamp * 1000)
         let newChainData = Object.assign({}, chainData)
         newChainData._id = ObjectId()
         

@@ -14,7 +14,6 @@ const getJoeAPY = async (web3s, blockNum, timestamp) => {
     // const blockNumber = await web3.eth.getBlockNumber()
     
     avax_web3.eth.defaultBlock = blockNum
-    
 
     let APYData = {
         APY: {
@@ -24,22 +23,8 @@ const getJoeAPY = async (web3s, blockNum, timestamp) => {
     }
 
     let JoePriceFeed = new avax_web3.eth.Contract(priceFeedAbi, priceFeedAddresses.JOE)
-
-    
     const joePrice = Number(await JoePriceFeed.methods.fetchPrice_v().call()) / 10 ** 18
-    async function getPrice() {
-        let response =  await fetch("https://api.coingecko.com/api/v3/coins/joe/market_chart?vs_currency=usd&days=30&interval=daily")
-        try {
-            let data = await response.json()
-            return data.prices
-        } catch(err) {
-            console.log(err)
-        }
-        
-        return []
-    }
 
-    const joePrices = await getPrice()
     stakeAPIURL = "https://api.thegraph.com/subgraphs/id/Qmb9wzRvCXPhFb42Lo3oCvhuy5NiE76c7cSZFBW944FJJm"
 
     moneyMarketAPIURL = "https://api.thegraph.com/subgraphs/id/QmTQhopZCfQa7Ua2QDDmtwUWxSUYNMiVJFyQ9KPgpYG6NB"
@@ -48,6 +33,7 @@ const getJoeAPY = async (web3s, blockNum, timestamp) => {
         query($first: Int, $orderBy: BigInt, $orderDirection: String) {
             daySnapshots(first: $first, orderBy: $orderBy, orderDirection: $orderDirection, where: {periodStartUnix_lt: ${timestamp}}) {
             dayIndex,
+            periodStartUnix,
             totalStake,
             rewards {
                 id,
@@ -80,7 +66,7 @@ const getJoeAPY = async (web3s, blockNum, timestamp) => {
         .query({
             query: gql(stakeQuery),
             variables: {
-                first: 30,
+                first: 7,
                 orderBy: 'dayIndex',
                 orderDirection: 'desc',
             },
@@ -99,7 +85,7 @@ const getJoeAPY = async (web3s, blockNum, timestamp) => {
         .query({
             query: gql(remitterQuery),
             variables: {
-                first: 30,
+                first: 7,
                 orderBy: 'date',
                 orderDirection: 'desc',
             },
@@ -112,23 +98,19 @@ const getJoeAPY = async (web3s, blockNum, timestamp) => {
     
     const sevenDayAPRs = []
 
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 7; i++) {
         const dayTotalStaked = stakeResult.data.daySnapshots[i].totalStake
-        const dayRemitted = stakeResult.data.daySnapshots[i].rewards[0].changeInReward
-        const price = joePrices[i][1]
-        if (dayTotalStaked && dayRemitted && price) {
+        const dayRemitted = remitterResult.data.dayDatas[i].usdRemitted
+
+        if (dayTotalStaked && dayRemitted) {
             
-            const dayilyAPR = Number(dayRemitted) / 10 ** 6 * 365 / (Number(dayTotalStaked) / 10 ** 18 * price)
+            const dayilyAPR = Number(dayRemitted) * 365 / (Number(dayTotalStaked) / 10 ** 18 * joePrice)
             sevenDayAPRs.push(dayilyAPR)
-            
         }
     }
     const average = sevenDayAPRs.reduce((a, b) => a + b, 0) / sevenDayAPRs.length;
 
-    console.log("average", average)
-
     APYData.APY.value = average * (1 - .2)
-
 
     Object.keys(APYData).forEach(key => {
         APYData[key].block = blockNum

@@ -16,6 +16,7 @@ const CurvePoolRoutes = require("./routes/CurvePool")
 const BoostRoutes = require("./routes/Boost")
 const VaultRoutes = require("./routes/Vault")
 const getChainData = require("./utils/getChainData")
+const getBackFillData = require("./utils/getBackFillData")
 const SortedTrovesRoutes = require("./routes/SortedTroves")
 const sleep = require("ko-sleep");
 const removeTrailingSlash = require('./middleware/removeTrailingSlash');
@@ -24,9 +25,7 @@ const removeTrailingSlash = require('./middleware/removeTrailingSlash');
 const PORT = process.env.PORT || 3002
 
 // Call getChainData here to begin chain data update loop and start caching new data to database
-getChainData.getChainData()
-
-
+getBackFillData()
 
 const app = express()
 
